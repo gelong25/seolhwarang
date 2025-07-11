@@ -98,7 +98,7 @@ export default function Mission() {
         <div className="p-4 bg-purple-50 border-b">
           <div className="flex items-start space-x-3">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-sm">
-              <img src="/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
+              <img src="/assets/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1">
               <div className="bg-white rounded-xl p-3 shadow-sm">

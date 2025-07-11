@@ -15,7 +15,7 @@ export default function Courses() {
     { id: 'legend', name: '전설', icon: '⚡' },
     { id: 'nature', name: '자연', icon: '🌿' },
     { id: 'culture', name: '문화', icon: '🏛️' },
-    { id: 'food', name: '음식', icon: '🍊' }
+    { id: 'food', name: '음식', icon: '/assets/mandarin.png' }
   ];
 
   const allCourses = [
@@ -30,7 +30,7 @@ export default function Courses() {
       missions: 3,
       points: 150,
       completed: true,
-      image: '🐉',
+      image: '/assets/dragon.png',
       color: 'bg-blue-50 border-blue-200',
       premium: false
     },
@@ -45,7 +45,7 @@ export default function Courses() {
       missions: 5,
       points: 200,
       completed: false,
-      image: '⛰️',
+      image: '/assets/guardian.png',
       color: 'bg-green-50 border-green-200',
       premium: false
     },
@@ -60,7 +60,7 @@ export default function Courses() {
       missions: 4,
       points: 250,
       completed: false,
-      image: '🌅',
+      image: '/assets/sungsan.png',
       color: 'bg-orange-50 border-orange-200',
       premium: true
     },
@@ -75,7 +75,7 @@ export default function Courses() {
       missions: 3,
       points: 120,
       completed: false,
-      image: '🤿',
+      image: '/assets/haenyeo.png',
       color: 'bg-cyan-50 border-cyan-200',
       premium: false
     },
@@ -90,7 +90,7 @@ export default function Courses() {
       missions: 4,
       points: 180,
       completed: false,
-      image: '🍊',
+      image: '/assets/mandarin.png',
       color: 'bg-yellow-50 border-yellow-200',
       premium: false
     },
@@ -105,7 +105,7 @@ export default function Courses() {
       missions: 3,
       points: 140,
       completed: false,
-      image: '🗿',
+      image: '/assets/dolhareubang.png',
       color: 'bg-gray-50 border-gray-200',
       premium: true
     }
@@ -171,12 +171,12 @@ export default function Courses() {
         <div className="p-4 bg-indigo-50 border-b">
           <div className="flex items-start space-x-3">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-sm">
-              <img src="/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
+              <img src="/assets/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1">
               <div className="bg-white rounded-xl p-3 shadow-sm">
                 <p className="text-gray-800 leading-relaxed">
-                  "어떤 모험을 떠나고 싶어? 네 수준에 맞는 코스를 골라봐! 🎯"
+                  "모험을 떠날 준비 됐어? 가보고 싶은 곳을 선택해줘!"
                 </p>
               </div>
             </div>
@@ -196,7 +196,7 @@ export default function Courses() {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                <span>{category.icon}</span>
+                <img src={category.icon} alt={category.name} className="w-5 h-5 object-contain" />
                 <span>{category.name}</span>
               </button>
             ))}
@@ -224,7 +224,9 @@ export default function Courses() {
               )}
 
               <div className="flex items-start space-x-3 mt-6">
-                <div className="text-5xl">{course.image}</div>
+                <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shadow-sm flex items-center justify-center">
+                  <img src={course.image} alt={course.title} className="w-full h-full object-contain" />
+                </div>
                 <div className="flex-1">
                   <h3 className="font-bold text-lg text-gray-800 mb-1">{course.title}</h3>
                   <p className="text-gray-600 text-sm mb-2 flex items-center space-x-2">
