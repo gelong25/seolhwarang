@@ -86,7 +86,7 @@ export default function Home() {
         <div className="max-w-md mx-auto pt-20">
           <div className="text-center mb-8">
             <div className="w-32 h-32 rounded-full flex items-center justify-center text-6xl mx-auto shadow-lg overflow-hidden bg-white">
-              <img src="/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
+              <img src="/assets/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
             </div>
             <h1 className="mt-6 text-3xl font-bold text-gray-800">반가워!</h1>
             <p className="text-gray-600 mt-2 text-lg">나와 함께 제주 모험을 떠날<br/>친구를 선택해줘!</p>
@@ -130,7 +130,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-md">
-                <img src="/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
+                <img src="/assets/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
               </div>
               <div>
                 <h2 className="font-bold text-lg">화랑이</h2>
@@ -169,21 +169,33 @@ export default function Home() {
         {/* 메인 컨텐츠 */}
         <div className="p-4">
           {/* 캐릭터 인사 */}
-          <div className="bg-green-50 rounded-2xl p-4 mb-6 border border-green-200">
-            <div className="flex items-start space-x-3">
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-sm">
-                <img src="/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
+          <div className="bg-green-50 rounded-2xl p-6 mb-6 border border-green-200 relative">
+            <div className="flex items-center space-x-4">
+              {/* 캐릭터 이미지 */}
+              <div className="flex-shrink-0 self-start mt-6">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-white shadow-md">
+                  <img src="/assets/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
+                </div>
               </div>
+
+              {/* 말풍선 + 버튼 */}
               <div className="flex-1">
-                <div className="bg-white rounded-xl p-3 shadow-sm">
-                  <p className="text-gray-800 leading-relaxed">
-                    "안녕! 오늘도 제주의 신비로운 이야기를 들으러 갈까? 
-                    새로운 모험이 기다리고 있어! 🌟"
+                <div className="bg-white rounded-xl p-5 shadow-sm">
+                  <p className="text-gray-800 leading-relaxed text-base">
+                    "안녕~ 나는 화랑이야! <br/> 
+                    오늘도 제주의 신비로운 이야기를 들으러 갈까? <br/>
+                    새로운 모험이 기다리고 있어!"
                   </p>
+                </div>
+                <div className="mt-4 flex items-center justify-center">
+                  <button className="px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-full text-sm font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md">
+                    🎵 화랑이 목소리로 듣기
+                  </button>
                 </div>
               </div>
             </div>
           </div>
+        
 
           {/* 오늘의 추천 코스 */}
           <div className="mb-6">
