@@ -28,9 +28,9 @@ export default function Home() {
   };
 
   const characters = [
-    { id: 'hwarang', name: '화랑이', emoji: '🌿', voice: '상냥한 목소리' },
-    { id: 'dolhareubang', name: '돌하르방', emoji: '🗿', voice: '든든한 목소리' },
-    { id: 'tangerine', name: '귤이', emoji: '🍊', voice: '밝은 목소리' }
+    { id: 'hwarang', name: '화랑이', emoji: '/assets/hwarang.png', voice: '상냥한 목소리' },
+    { id: 'dolhareubang', name: '돌이방이', emoji: '/assets/doribangi.png', voice: '든든한 목소리' },
+    { id: 'tangerine', name: '귤이', emoji: '/assets/gyuri.png', voice: '밝은 목소리' }
   ];
 
   const todaysCourses = [
@@ -89,7 +89,7 @@ export default function Home() {
               <img src="/assets/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
             </div>
             <h1 className="mt-6 text-3xl font-bold text-gray-800">반가워!</h1>
-            <p className="text-gray-600 mt-2 text-lg">나와 함께 제주 모험을 떠날<br/>친구를 선택해줘!</p>
+            <p className="text-gray-600 mt-2 text-lg">함께 모험을 떠날 친구를 선택해줘!</p>
           </div>
 
           <div className="space-y-4">
@@ -100,7 +100,13 @@ export default function Home() {
                 className="bg-white rounded-2xl p-6 shadow-md border-2 border-gray-100 active:scale-95 transition-transform cursor-pointer hover:border-green-300"
               >
                 <div className="flex items-center space-x-4">
-                  <div className="text-4xl">{char.emoji}</div>
+                <div className="text-4xl">
+                  {char.emoji.startsWith('/') ? (
+                    <img src={char.emoji} alt={char.name} className="w-25 h-25 object-cover" />
+                  ) : (
+                    char.emoji
+                  )}
+                </div>
                   <div className="flex-1">
                     <h3 className="font-bold text-lg text-gray-800">{char.name}</h3>
                     <p className="text-gray-500 text-sm">{char.voice}</p>
