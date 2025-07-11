@@ -42,7 +42,7 @@ export default function Home() {
       difficulty: '쉬움',
       points: 100,
       missions: 3,
-      image: '🌊',
+      image: '/assets/dragon.png',
       color: 'bg-blue-50 border-blue-200'
     },
     // {
@@ -211,7 +211,9 @@ export default function Home() {
                   className={`rounded-2xl p-4 border-2 ${course.color} shadow-sm`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className="text-4xl">{course.image}</div>
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shadow-sm flex items-center justify-center">
+                    <img src={course.image} alt={course.title} className="w-full h-full object-contain" />
+                  </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-lg text-gray-800">{course.title}</h4>
                       <p className="text-gray-600 text-sm mb-2">{course.location}</p>
