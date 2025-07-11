@@ -11,11 +11,11 @@ export default function Courses() {
   const [userLevel, setUserLevel] = useState(3);
 
   const categories = [
-    { id: 'all', name: '전체', icon: '🗺️' },
-    { id: 'legend', name: '전설', icon: '⚡' },
-    { id: 'nature', name: '자연', icon: '🌿' },
-    { id: 'culture', name: '문화', icon: '🏛️' },
-    { id: 'food', name: '음식', icon: '/assets/mandarin.png' }
+    { id: 'all', name: '전체', icon: 'assets/all_icon.png' },
+    { id: 'legend', name: '전설', icon: '/assets/dragon_icon.png' },
+    { id: 'nature', name: '자연', icon: '/assets/nature_icon.png' },
+    { id: 'culture', name: '문화', icon: '/assets/culture_icon.png' },
+    { id: 'food', name: '음식', icon: '/assets/food_icon.png' }
   ];
 
   const allCourses = [
@@ -176,7 +176,8 @@ export default function Courses() {
             <div className="flex-1">
               <div className="bg-white rounded-xl p-3 shadow-sm">
                 <p className="text-gray-800 leading-relaxed">
-                  "모험을 떠날 준비 됐어? 가보고 싶은 곳을 선택해줘!"
+                  "모험을 떠날 준비 됐어? <br/>
+                  그럼 가보고 싶은 곳을 선택해줘!"
                 </p>
               </div>
             </div>
@@ -186,20 +187,24 @@ export default function Courses() {
         {/* 카테고리 필터 */}
         <div className="p-4 bg-white border-b">
           <div className="flex space-x-2 overflow-x-auto pb-2">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  selectedCategory === category.id
-                    ? 'bg-indigo-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <img src={category.icon} alt={category.name} className="w-5 h-5 object-contain" />
-                <span>{category.name}</span>
-              </button>
-            ))}
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                selectedCategory === category.id
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <img 
+                src={category.icon} 
+                alt={category.name} 
+                className="w-6 h-6 rounded-full bg-white shadow p-1 object-contain"
+              />
+              <span>{category.name}</span>
+            </button>
+          ))}
           </div>
         </div>
 
