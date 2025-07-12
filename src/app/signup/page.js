@@ -11,11 +11,22 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    // TODO: 백엔드 회원가입 API 연동 필요
-    alert('회원가입이 완료되었습니다!');
-    router.push('/');
+  
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+  
+    const data = await res.json();
+    if (res.ok) {
+      alert('회원가입 성공!');
+      router.push('/mypage');
+    } else {
+      alert(data.error);
+    }
   };
 
   return (

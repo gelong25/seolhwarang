@@ -9,6 +9,8 @@ export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState('hwarang');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -43,9 +45,21 @@ export default function MyPage() {
     return characters.find(char => char.id === selectedCharacter) || characters[0];
   };
 
-  // TODO: 로그인 처리 - 백엔드 인증 API 연동 필요
-  const handleLogin = () => {
-    setIsLoggedIn(true);
+  const handleLogin = async () => {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+  
+    const data = await res.json();
+    if (res.ok) {
+      alert('로그인 성공!');
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setIsLoggedIn(true); 
+    } else {
+      alert(data.error);
+    }
   };
 
   // TODO: 구독 처리 - 백엔드에 사용자 구독 요청 API 연동 필요
@@ -103,8 +117,25 @@ export default function MyPage() {
               </div>
             </div>
 
-            {/* 로그인 버튼 */}
             <div className="space-y-3 mb-6">
+              {/* 이메일, 비밀번호 입력 */}
+            <div className="space-y-4 mb-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="이메일 입력"
+                className="w-full px-4 py-2 border rounded-xl"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="비밀번호 입력"
+                className="w-full px-4 py-2 border rounded-xl"
+              />
+            </div>
+            {/* 로그인 버튼 */}
               <button
                 onClick={handleLogin}
                 className="w-full px-6 py-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-2xl text-lg font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
