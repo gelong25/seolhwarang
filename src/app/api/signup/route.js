@@ -6,7 +6,7 @@ const DB_PATH = join(DATA_DIR, 'users.json');
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, points, completedMissions, selectedCharacter  } = await req.json();
 
     const newUser = { name, email, password };
 

@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import BottomNavigation from '@/components/BottomNavigation';
 import SubscriptionModal from '@/components/SubscriptionModal';
+import characters from '@/data/character.json';
 
 export default function Courses() {
   const router = useRouter();
@@ -187,6 +188,13 @@ export default function Courses() {
       default: return 'bg-green-100 text-green-800';
     }
   };
+
+  // 캐릭터 선택 로직
+  const selectedCharacterId = typeof window !== 'undefined'
+    ? localStorage.getItem('selectedCharacter') || 'hwarang'
+    : 'hwarang';
+
+  const currentCharacter = characters.find(c => c.id === selectedCharacterId);
 
   const CourseModal = ({ course, onClose }) => {
     if (!course) return null;
@@ -373,7 +381,7 @@ export default function Courses() {
         <div className="p-4 bg-indigo-50 border-b">
           <div className="flex items-start space-x-3">
             <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-sm">
-              <img src="/assets/hwarang.png" alt="화랑이" className="w-full h-full object-cover" />
+            <img src={currentCharacter.image} alt={currentCharacter.name} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1">
               <div className="bg-white rounded-xl p-3 shadow-sm">

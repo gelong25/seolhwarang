@@ -14,28 +14,24 @@ export default function MyPage() {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
+  const storedUser = typeof window !== 'undefined' 
+  ? JSON.parse(localStorage.getItem('user')) 
+  : null;
+
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
       setIsLoggedIn(true);
     }
   }, []);
 
   useEffect(() => {
-    // 캐릭터 정보 가져오기
-    // TODO: 로그인한 사용자라면 백엔드에서 캐릭터 정보 조회해서 setSelectedCharacter 설정 필요
-    const character = localStorage.setItem('selectedCharacter', 'hwarang');
-    setSelectedCharacter(character);
+    const user = JSON.parse(localStorage.getItem('user'));
+    const savedCharacter = user?.selectedCharacter || 'hwarang';
+    setSelectedCharacter(savedCharacter);
   }, []);
 
-  // 사용자 더미 데이터
-  const userData = {
-    name: '포비야',
-    email: 'kimjeju@example.com',
-    points: 1250,
-    completedMissions: 3,
-    isSubscribed: false
-  };
+  const userData = storedUser;
 
   const characters = [
     { id: 'hwarang', name: '화랑이', emoji: '/assets/hwarang.png' },
@@ -166,14 +162,14 @@ export default function MyPage() {
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">⭐</span>
                   <div>
-                    <p className="text-lg font-bold text-gray-800">{userData.points.toLocaleString()}P</p>
+                    <p className="text-lg font-bold text-gray-800">{(userData.points ?? 0).toLocaleString()}P</p>
                     <p className="text-sm text-gray-500">모험 포인트</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">🏆</span>
                   <div>
-                    <p className="text-lg font-bold text-gray-800">{userData.completedMissions}개</p>
+                    <p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>
                     <p className="text-sm text-gray-500">완료한 미션</p>
                   </div>
                 </div>
