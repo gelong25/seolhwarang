@@ -15,6 +15,13 @@ export default function MyPage() {
   const router = useRouter();
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  useEffect(() => {
     // 캐릭터 정보 가져오기
     // TODO: 로그인한 사용자라면 백엔드에서 캐릭터 정보 조회해서 setSelectedCharacter 설정 필요
     const character = localStorage.setItem('selectedCharacter', 'hwarang');
