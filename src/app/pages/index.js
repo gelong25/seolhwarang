@@ -6,8 +6,11 @@ import BottomNavigation from '@/components/BottomNavigation';
 export default function Home() {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [showCharacterSelect, setShowCharacterSelect] = useState(false);
+  
+  // TODO: 유저 포인트와 완료한 미션 수는 백엔드에서 조회해야 함
   const [userPoints, setUserPoints] = useState(1250);
   const [completedMissions, setCompletedMissions] = useState(3);
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -16,10 +19,12 @@ export default function Home() {
     if (!hasVisited) {
       setShowCharacterSelect(true);
     } else {
+      // TODO: 백엔드에서 유저 캐릭터 정보 불러오기
       setSelectedCharacter(localStorage.getItem('selectedCharacter') || 'hwarang');
     }
   }, []);
 
+   // TODO: 선택한 캐릭터 정보를 백엔드에 저장
   const handleCharacterSelect = (character) => {
     setSelectedCharacter(character);
     localStorage.setItem('selectedCharacter', character);
@@ -33,6 +38,7 @@ export default function Home() {
     { id: 'tangerine', name: '귤이', emoji: '/assets/gyuri.png', voice: '밝은 목소리' }
   ];
 
+  // TODO: 추천 코스 목록은 백엔드에서 동적으로 받아오도록 변경 필요
   const todaysCourses = [
     {
       id: 1,
@@ -194,6 +200,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="mt-4 flex items-center justify-center">
+                  {/* TODO: 캐릭터 음성 재생 기능 연동 (TTS 또는 오디오 파일) */}
                   <button className="px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-full text-sm font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md">
                     🎵 화랑이 목소리로 듣기
                   </button>

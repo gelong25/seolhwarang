@@ -8,8 +8,10 @@ import BottomNavigation from '@/components/BottomNavigation';
 export default function Courses() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  // TODO: 사용자 레벨을 API로부터 가져오도록 수정
   const [userLevel, setUserLevel] = useState(3);
 
+  // TODO: 백엔드에서 카테고리 리스트를 받아오도록 변경
   const categories = [
     { id: 'all', name: '전체', icon: 'assets/all_icon.png' },
     { id: 'legend', name: '전설', icon: '/assets/dragon_icon.png' },
@@ -18,6 +20,7 @@ export default function Courses() {
     { id: 'food', name: '음식', icon: '/assets/food_icon.png' }
   ];
 
+  // TODO: 백엔드 API로부터 코스 목록 불러오기
   const allCourses = [
     {
       id: 1,
@@ -255,6 +258,7 @@ export default function Courses() {
                     </span>
                   </div>
 
+                  {/* TODO: 해당 코스 ID 기반으로 스토리/미션 API 연결 필요 */}
                   <div className="flex space-x-2">
                   <button 
                       onClick={() => router.push(`/story/${course.id}`)}
@@ -270,6 +274,7 @@ export default function Courses() {
                           : 'bg-green-500 text-white hover:bg-green-600'
                       }`}
                     >
+                      {/* TODO: 프리미엄 여부 및 사용자 구독 상태 API로 검증 필요 */}
                       {course.premium && !course.completed ? '🔓 구독하기' : '🎯 미션 시작'}
                     </button>
                   </div>

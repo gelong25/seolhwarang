@@ -13,6 +13,7 @@ export default function MyPage() {
 
   useEffect(() => {
     // 캐릭터 정보 가져오기
+    // TODO: 로그인한 사용자라면 백엔드에서 캐릭터 정보 조회해서 setSelectedCharacter 설정 필요
     const character = localStorage.setItem('selectedCharacter', 'hwarang');
     setSelectedCharacter(character);
   }, []);
@@ -42,10 +43,12 @@ export default function MyPage() {
     return characters.find(char => char.id === selectedCharacter) || characters[0];
   };
 
+  // TODO: 로그인 처리 - 백엔드 인증 API 연동 필요
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
 
+  // TODO: 구독 처리 - 백엔드에 사용자 구독 요청 API 연동 필요
   const handleSubscribe = () => {
     setShowSubscriptionModal(true);
   };
@@ -231,6 +234,7 @@ export default function MyPage() {
                     onClick={() => setIsLoggedIn(false)}
                     className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-red-600 flex items-center"
                   >
+                    {/* TODO: 로그아웃 처리 - 세션/토큰 제거 및 백엔드 로그아웃 호출 필요 */}
                     <span className="mr-3">🚪</span>
                     로그아웃
                   </button>
