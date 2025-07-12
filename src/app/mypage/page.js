@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'; 
 import Head from 'next/head';
 import BottomNavigation from '@/components/BottomNavigation';
 
@@ -8,6 +9,7 @@ export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState('hwarang');
+  const router = useRouter();
 
   useEffect(() => {
     // 캐릭터 정보 가져오기
@@ -106,7 +108,10 @@ export default function MyPage() {
               >
                 🔐 로그인하기
               </button>
-              <button className="w-full px-6 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm">
+              <button
+                onClick={() => router.push('/signup')} 
+                className="w-full px-6 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm"
+              >
                 👤 회원가입하기
               </button>
             </div>
