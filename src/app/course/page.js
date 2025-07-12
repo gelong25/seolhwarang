@@ -4,10 +4,12 @@ import { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import BottomNavigation from '@/components/BottomNavigation';
+import SubscriptionModal from '@/components/SubscriptionModal';
 
 export default function Courses() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   // TODO: 사용자 레벨을 API로부터 가져오도록 수정
   const [userLevel, setUserLevel] = useState(3);
 
@@ -261,13 +263,27 @@ export default function Courses() {
                   {/* TODO: 해당 코스 ID 기반으로 스토리/미션 API 연결 필요 */}
                   <div className="flex space-x-2">
                   <button 
-                      onClick={() => router.push(`/story/${course.id}`)}
+                    onClick={() => {
+                      if (course.premium) {
+                        setShowSubscriptionModal(true);
+                      } else {
+                        router.push(`/story/${course.id}`);
+                      }
+                    }}
                       className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors"
                     >
                       🎧 스토리 듣기
                     </button>
                     <button
-                      onClick={() => router.push(`/mission/${course.id}`)}
+                      onClick={() => {
+                        // TODO: 사용자 구독 상태를 API로부터 가져와야 함
+                        // 사용자가 구독을 하지 않은 경우 모달 표시
+                        if (course.premium) {
+                          setShowSubscriptionModal(true);
+                        } else {
+                          router.push(`/mission/${course.id}`);
+                        }
+                      }}
                       className={`flex-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                         course.premium && !course.completed
                           ? 'bg-yellow-500 text-white hover:bg-yellow-600'
@@ -286,6 +302,10 @@ export default function Courses() {
 
         {/* 하단 네비게이션 */}
         <BottomNavigation />
+
+        {showSubscriptionModal && (
+        <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />
+      )}
       </div>
     </div>
   );
