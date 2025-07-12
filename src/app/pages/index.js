@@ -3,12 +3,17 @@ import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import BottomNavigation from '@/components/BottomNavigation';
 import characters from '@/data/character.json';
+import CourseModal from '@/components/CourseModal';
+import { getDifficultyColor, getDifficultyText } from '@/utils/courseUtils';
+import courses from '@/data/courses.json';
 
 export default function Home() {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [showCharacterSelect, setShowCharacterSelect] = useState(false);
   const [userPoints, setUserPoints] = useState(0);
   const [completedMissions, setCompletedMissions] = useState(0);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   
   const router = useRouter();
   
@@ -46,19 +51,21 @@ export default function Home() {
     setShowCharacterSelect(false);
   };
 
+  const todaysCourses = [courses.find(course => course.id === 1)];
+  
   // TODO: 추천 코스 목록은 백엔드에서 동적으로 받아오도록 변경 필요 (1개만)
-  const todaysCourses = [
-    {
-      id: 1,
-      title: '용머리해안의 전설',
-      location: '용머리해안',
-      story: '옛날 옛적, 용왕님의 이야기가...',
-      difficulty: '쉬움',
-      points: 100,
-      missions: 3,
-      image: '/assets/dragon.png',
-      color: 'bg-blue-50 border-blue-200'
-    },
+  // const todaysCourses = [
+  //   {
+  //     id: 1,
+  //     title: '용머리해안의 전설',
+  //     location: '용머리해안',
+  //     story: '옛날 옛적, 용왕님의 이야기가...',
+  //     difficulty: '쉬움',
+  //     points: 100,
+  //     missions: 3,
+  //     image: '/assets/dragon.png',
+  //     color: 'bg-blue-50 border-blue-200'
+  //   },
     // {
     //   id: 2,
     //   title: '한라산 산신령 이야기',
@@ -81,7 +88,7 @@ export default function Home() {
     //   image: '🌅',
     //   color: 'bg-orange-50 border-orange-200'
     // }
-  ];
+  // ];
 
   const coupons = [
     { name: '제주 감귤 체험장', discount: '20%', points: 500 },
@@ -223,33 +230,41 @@ export default function Home() {
               {todaysCourses.map((course) => (
                 <div
                   key={course.id}
-                  className={`rounded-2xl p-4 border-2 ${course.color} shadow-sm`}
+                  onClick={() => setSelectedCourse(course)}
+                  className={`rounded-2xl p-4 border-2 ${course.color} shadow-sm hover:scale-95 cursor-pointer transition-transform duration-150`}
                 >
                   <div className="flex items-start space-x-3">
                   <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shadow-sm flex items-center justify-center">
                     <img src={course.image} alt={course.title} className="w-full h-full object-contain" />
                   </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-lg text-gray-800">{course.title}</h4>
-                      <p className="text-gray-600 text-sm mb-2">{course.location}</p>
-                      <p className="text-gray-700 text-sm mb-3 leading-relaxed">{course.story}</p>
-                      
-                      <div className="flex justify-between items-center mb-3">
-                        <div className="flex items-center space-x-4">
-                          <span className="text-xs px-2 py-1 bg-white rounded-full text-gray-600">
-                            {course.difficulty}
-                          </span>
-                          <span className="text-xs text-gray-600">
-                            미션 {course.missions}개
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <span className="text-yellow-500">⭐</span>
-                          <span className="text-sm font-medium text-gray-700">
-                            {course.points}P
-                          </span>
-                        </div>
-                      </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-lg text-gray-800 mb-1">{course.title}</h3>
+                    <p className="text-gray-600 text-sm mb-2 flex items-center space-x-2">
+                      <span>📍 {course.location}</span>
+                      <span>•</span>
+                      <span>⏱️ {course.duration}</span>
+                    </p>
+                    <p className="text-gray-700 text-sm mb-3 leading-relaxed">{course.description}</p>
+                    
+                    <div className="flex items-center space-x-3 mb-4">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${getDifficultyColor(course.difficulty)}`}>
+                        {getDifficultyText(course.difficulty)}
+                      </span>
+                      <span className="text-xs text-gray-600 flex items-center space-x-1">
+                        <span>🎯</span>
+                        <span>미션 {course.missions}개</span>
+                      </span>
+                      <span className="text-xs text-gray-600 flex items-center space-x-1">
+                        <span>🏛️</span>
+                        <span>{course.spots.length}개 장소</span>
+                      </span>
+                      <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-600 flex items-center space-x-1">
+                        <span>⭐</span>
+                        <span>{course.points}P</span>
+                      </span>
+                    </div>
+                    </div>
 
                       <div className="flex space-x-2">
                       <button 
@@ -272,6 +287,15 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* 코스 상세 모달 */}
+        {selectedCourse && (
+            <CourseModal 
+              course={selectedCourse}
+              onClose={() => setSelectedCourse(null)}
+              setShowSubscriptionModal={setShowSubscriptionModal}
+            />
+          )}
 
         {/* 하단 네비게이션 */}
         <BottomNavigation/>
