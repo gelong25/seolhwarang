@@ -243,7 +243,10 @@ export default function Home() {
                       </div>
 
                       <div className="flex space-x-2">
-                        <button className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors">
+                      <button 
+                          onClick={() => router.push(`/story/${course.id}`)}
+                          className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors"
+                        >
                           🎧 스토리 듣기
                         </button>
                         <button
