@@ -108,7 +108,7 @@ export default function Home() {
                 <div className="flex items-center space-x-4">
                 <div className="text-4xl">
                   {char.emoji.startsWith('/') ? (
-                    <img src={char.emoji} alt={char.name} className="w-25 h-25 object-cover" />
+                    <img src={char.emoji} alt={char.name} className="w-20 h-20 object-cover" />
                   ) : (
                     char.emoji
                   )}
