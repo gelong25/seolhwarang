@@ -52,43 +52,6 @@ export default function Home() {
   };
 
   const todaysCourses = [courses.find(course => course.id === 1)];
-  
-  // TODO: 추천 코스 목록은 백엔드에서 동적으로 받아오도록 변경 필요 (1개만)
-  // const todaysCourses = [
-  //   {
-  //     id: 1,
-  //     title: '용머리해안의 전설',
-  //     location: '용머리해안',
-  //     story: '옛날 옛적, 용왕님의 이야기가...',
-  //     difficulty: '쉬움',
-  //     points: 100,
-  //     missions: 3,
-  //     image: '/assets/dragon.png',
-  //     color: 'bg-blue-50 border-blue-200'
-  //   },
-    // {
-    //   id: 2,
-    //   title: '한라산 산신령 이야기',
-    //   location: '한라산',
-    //   story: '높은 산에 사는 친근한 산신령...',
-    //   difficulty: '보통',
-    //   points: 150,
-    //   missions: 4,
-    //   image: '⛰️',
-    //   color: 'bg-green-50 border-green-200'
-    // },
-    // {
-    //   id: 3,
-    //   title: '성산일출봉의 비밀',
-    //   location: '성산일출봉',
-    //   story: '해가 뜨는 곳에 숨겨진 보물...',
-    //   difficulty: '어려움',
-    //   points: 200,
-    //   missions: 5,
-    //   image: '🌅',
-    //   color: 'bg-orange-50 border-orange-200'
-    // }
-  // ];
 
   const coupons = [
     { name: '제주 감귤 체험장', discount: '20%', points: 500 },

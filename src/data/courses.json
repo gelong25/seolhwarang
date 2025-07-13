@@ -34,7 +34,7 @@
       "points": 200,
       "completed": false,
       "image": "/assets/guardian.png",
-      "color": "bg-green-50 border-green-200",
+      "color": "bg-purple-50 border-purple-200",
       "premium": false,
       "spots": [
         { "name": "어리목 탐방로", "type": "트레킹", "description": "산신령이 처음 나타나는 신비로운 숲길", "duration": "120분" },
@@ -57,7 +57,7 @@
       "points": 250,
       "completed": false,
       "image": "/assets/sungsan.png",
-      "color": "bg-orange-50 border-orange-200",
+      "color": "bg-green-50 border-green-200",
       "premium": true,
       "spots": [
         { "name": "성산일출봉", "type": "관광지", "description": "일출의 여신이 숨겨둔 보물 찾기", "duration": "120분" },
@@ -81,7 +81,7 @@
       "points": 120,
       "completed": false,
       "image": "/assets/haenyeo.png",
-      "color": "bg-cyan-50 border-cyan-200",
+      "color": "bg-indigo-50 border-indigo-200",
       "premium": false,
       "spots": [
         { "name": "해녀박물관", "type": "체험", "description": "해녀 할머니들의 삶과 문화 배우기", "duration": "90분" },

@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import BottomNavigation from '@/components/BottomNavigation';
 import SubscriptionModal from '@/components/SubscriptionModal';
+import EditProfileModal from '@/components/EditProfileModal';
+import ContactModal from '@/components/ContactModal';
 
 export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,6 +16,9 @@ export default function MyPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [userData, setUserData] = useState(null); 
 
   const storedUser = typeof window !== 'undefined' 
   ? JSON.parse(localStorage.getItem('user')) 
@@ -22,7 +27,9 @@ export default function MyPage() {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
+      setUserData(storedUser);
       setIsLoggedIn(true);
+      setSelectedCharacter(storedUser.selectedCharacter || 'hwarang');
     }
   }, []);
 
@@ -31,8 +38,6 @@ export default function MyPage() {
     const savedCharacter = user?.selectedCharacter || 'hwarang';
     setSelectedCharacter(savedCharacter);
   }, []);
-
-  const userData = storedUser;
 
   const characters = [
     { id: 'hwarang', name: '화랑이', emoji: '/assets/hwarang.png' },
@@ -67,7 +72,6 @@ export default function MyPage() {
     }
   };
 
-  // TODO: 구독 처리 - 백엔드에 사용자 구독 요청 API 연동 필요
   const handleSubscribe = () => {
     setShowSubscriptionModal(true);
   };
@@ -260,14 +264,20 @@ export default function MyPage() {
               {/* 기타 메뉴 */}
               <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm">
                 <div className="p-4 space-y-1">
-                  <button className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center">
-                    <span className="mr-3">⚙️</span>
-                    내 정보 수정
-                  </button>
-                  <button className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center">
-                    <span className="mr-3">💬</span>
-                    문의하기
-                  </button>
+                <button
+                onClick={() => setShowEditModal(true)}
+                className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
+              >
+                <span className="mr-3">⚙️</span>
+                내 정보 수정
+              </button>
+              <button
+                onClick={() => setShowContactModal(true)}
+                className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
+              >
+                <span className="mr-3">💬</span>
+                문의하기
+              </button>
                   <button 
                     onClick={() => setIsLoggedIn(false)}
                     className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-red-600 flex items-center"
@@ -287,6 +297,18 @@ export default function MyPage() {
 
         {/* 하단 내비게이션<BottomNavigation /> */}
         <BottomNavigation />
+
+        {/* 기타 모달 컴포넌트 */}
+        {showEditModal && userData && (
+        <EditProfileModal
+          userData={userData}
+          onClose={() => setShowEditModal(false)}
+          onUpdateUser={(updatedUser) => setUserData(updatedUser)}
+        />
+      )}
+      {showContactModal && (
+        <ContactModal onClose={() => setShowContactModal(false)} />
+      )}
       </div>
     </div>
   );
