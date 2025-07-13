@@ -26,12 +26,23 @@ export default function BottomNavigation() {
         </button>
 
         <button
-          onClick={() => router.push('/mission')}
+          onClick={() => {
+            const storedUser = JSON.parse(localStorage.getItem('user'));
+            const userId = storedUser?.id;
+
+            if (userId) {
+              router.push(`/mission/${userId}`);
+            } else {
+              alert('로그인이 필요합니다!');
+              router.push('/mypage'); // 로그인하러 유도할 수도 있음
+            }
+          }}
           className="flex flex-col items-center space-y-1 text-gray-400"
         >
           <span className="text-2xl">🎯</span>
           <span className="text-xs font-medium">미션</span>
         </button>
+
 
         <button
           onClick={() => router.push('/mypage')}

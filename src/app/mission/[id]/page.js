@@ -2,8 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Head from 'next/head';
 import characters from '@/data/character.json';
 
