@@ -7,11 +7,12 @@ export async function POST(request) {
       return Response.json({ error: '내용과 캐릭터 설정이 완료되지 않았습니다.' }, { status: 400 });
     }
 
-    // ElevenLabs Initialize
-    const ELEVENLABS_API_KEY = "sk_bdf03699e5c2b453f71ec57db0d9a5bd4316899666207f72"; // 여기에 실제 API 키 입력
+    // ElevenLabs 초기화
+    const ELEVENLABS_API_KEY = "sk_bdf03699e5c2b453f71ec57db0d9a5bd4316899666207f72";
     const ELEVENLABS_API_URL = "https://api.elevenlabs.io/v1";
     
-    // 캐릭터별 음성 ID 설정 (ElevenLabs 음성 ID)
+    // 캐릭터별 음성 ID 설정
+    // TODO: 캐릭터별 음성 검증해야댐
     const voiceSettings = {
       hwarang: {
         voice_id: "21m00Tcm4TlvDq8ikWAM", // Rachel - 부드러운 여성 음성
@@ -35,11 +36,11 @@ export async function POST(request) {
 
     const selectedVoice = voiceSettings[character] || voiceSettings.hwarang;
     
-    // 테스트 모드 체크 (API 키가 유효하지 않을 때)
-    const isTestMode = false; // ElevenLabs API 사용
+    // 테스트 모드 체크 -> True이면 브라우저 내장 tts 사용함
+    const isTestMode = false; // flase: ElevenLabs API 사용
     
     if (isTestMode) {
-      // 브라우저 TTS 모드 - 클라이언트에서 처리
+      // 브라우저 TTS 모드 - 클라이언트에서 처리 - 이거 개빠름
       const mockResponse = {
         audioUrl: null, // 브라우저 TTS 사용을 위해 null
         duration: Math.ceil(text.length / 15),
@@ -78,7 +79,7 @@ export async function POST(request) {
       throw new Error(`ElevenLabs API Error: ${ttsResponse.status}`);
     }
 
-    // 오디오 데이터를 Base64로 변환
+    // 오디오 데이터 -> Base64로 변환
     const audioBuffer = await ttsResponse.arrayBuffer();
     const audioBase64 = Buffer.from(audioBuffer).toString('base64');
     const audioDataUrl = `data:audio/mpeg;base64,${audioBase64}`;
@@ -86,7 +87,7 @@ export async function POST(request) {
     // 응답 데이터
     const response = {
       audioUrl: audioDataUrl, // Base64 데이터 URL
-      duration: Math.ceil(text.length / 15), // 대략적인 재생 시간 계산
+      duration: Math.ceil(text.length / 15), // 대략적인 재생 시간 계산 - mp3 파일 변환이 아니라서 정확한 길이 예측이 안됨.
       text: text,
       character: character,
       voice_id: selectedVoice.voice_id,
