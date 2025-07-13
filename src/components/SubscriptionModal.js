@@ -1,3 +1,4 @@
+// src/components/SubscriptionModal.js
 'use client';
 
 import React from 'react';

@@ -1,5 +1,6 @@
+//app/mypage/app.js
 'use client';
-
+import Header from '@/components/Header'; // 여니추가
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; 
 import Head from 'next/head';
@@ -82,9 +83,9 @@ export default function MyPage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="max-w-md mx-auto bg-white min-h-screen">
+      <div className="pb-24 max-w-md mx-auto bg-white min-h-screen">
         {/* 헤더 */}
-        <div className="bg-gradient-to-r from-green-400 to-blue-500 p-4 text-white">
+        {/*<div className="bg-gradient-to-r from-green-400 to-blue-500 p-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-md">
@@ -96,7 +97,9 @@ export default function MyPage() {
               </div>
             </div>
           </div>
-        </div>
+        </div>*/}
+        <Header title="마이페이지" subtitle="내 정보와 혜택" gradient="from-green-400 to-blue-500" />
+
 
         {/* 로그인하지 않은 경우 */}
         {!isLoggedIn ? (
@@ -282,7 +285,7 @@ export default function MyPage() {
         {/* 구독 모달 */}
         {showSubscriptionModal && <SubscriptionModal onClose={closeModal} />}
 
-        {/* 하단 내비게이션 */}
+        {/* 하단 내비게이션<BottomNavigation /> */}
         <BottomNavigation />
       </div>
     </div>

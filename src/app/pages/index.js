@@ -182,7 +182,7 @@ export default function Home() {
             <div className="flex items-center space-x-2">
               <span className="text-2xl">🏆</span>
               <div>
-                <p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>
+                {/*<p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>*/}
                 <p className="text-sm text-gray-500">완료한 미션</p>
               </div>
             </div>

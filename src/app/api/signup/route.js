@@ -1,3 +1,4 @@
+//app/api/signup/route.js
 import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 

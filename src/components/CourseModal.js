@@ -1,3 +1,4 @@
+// src/components/CourseModal.js
 'use client';
 
 import { useRouter } from 'next/navigation';

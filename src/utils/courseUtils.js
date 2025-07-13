@@ -1,3 +1,4 @@
+// src/utils/courseUtils.js
 export const getDifficultyText = (level) => {
     switch(level) {
       case 1: return '쉬움';

@@ -1,3 +1,4 @@
+//app/mission/[id]/page.js
 "use client";
 
 import { useState } from 'react';
@@ -6,7 +7,7 @@ import { useParams } from 'next/navigation';
 import Head from 'next/head';
 import characters from '@/data/character.json';
 
-export default function Mission() {
+export default function Mission() { // 여기 수정
   const params = useParams();
   const id = params.id;  
   const router = useRouter();

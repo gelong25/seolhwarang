@@ -1,3 +1,4 @@
+// src/components/BottomNavigation.js
 "use client";
 
 import { useRouter } from 'next/navigation';
