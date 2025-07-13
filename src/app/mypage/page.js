@@ -65,8 +65,7 @@ export default function MyPage() {
       alert(data.error);
     }
   };
-
-  // TODO: 구독 처리 - 백엔드에 사용자 구독 요청 API 연동 필요
+  
   const handleSubscribe = () => {
     setShowSubscriptionModal(true);
   };
