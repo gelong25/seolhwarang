@@ -3,16 +3,23 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-import Head from 'next/head';
+
+interface Mission {
+  type: 'photo' | 'stamp' | 'quiz';
+  title: string;
+  description: string;
+  icon: string;
+  points: number;
+}
 
 export default function Mission() {
   const params = useParams();
-  const id = params.id;  
+  const id = params.id as string;  
   const router = useRouter();
   const [currentMission, setCurrentMission] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const missions = [
+  const missions: Mission[] = [
     {
       type: 'photo',
       title: '용머리해안 사진 찍기',
@@ -52,11 +59,6 @@ export default function Mission() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Head>
-        <title>미션 수행 - 화랑이와 제주 모험</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-
       <div className="max-w-md mx-auto bg-white min-h-screen">
         {/* 헤더 */}
         <div className="bg-gradient-to-r from-purple-400 to-pink-500 p-4 text-white">
@@ -200,4 +202,4 @@ export default function Mission() {
       </div>
     </div>
   );
-}
+} 
