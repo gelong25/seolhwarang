@@ -1,6 +1,6 @@
 //app/mission/[id]/page.js
 "use client";
-
+import Header from '@/components/Header'; // 여니추가
 import { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Head from 'next/head';
@@ -67,25 +67,8 @@ export default function Mission() { // 여기 수정
       </Head>
 
       <div className="max-w-md mx-auto bg-white min-h-screen">
-        {/* 헤더 */}
-        <div className="bg-gradient-to-r from-purple-400 to-pink-500 p-4 text-white">
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => router.back()}
-              className="text-white hover:text-gray-200 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <div>
-              <h1 className="text-xl font-bold">미션 수행</h1>
-              <p className="text-sm opacity-90">
-                {currentMission + 1} / {missions.length}
-              </p>
-            </div>
-          </div>
-        </div>
+      <Header title="미션 수행" subtitle={`${currentMission + 1} / ${missions.length}`} gradient="from-purple-400 to-pink-500" />
+
 
         {/* 진행 바 */}
         <div className="p-4 bg-white border-b">
