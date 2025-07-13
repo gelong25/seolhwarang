@@ -17,6 +17,7 @@ export default function MyPage() {
   const router = useRouter();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [userData, setUserData] = useState(null); 
 
   const storedUser = typeof window !== 'undefined' 
   ? JSON.parse(localStorage.getItem('user')) 
@@ -25,7 +26,9 @@ export default function MyPage() {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
+      setUserData(storedUser);
       setIsLoggedIn(true);
+      setSelectedCharacter(storedUser.selectedCharacter || 'hwarang');
     }
   }, []);
 
@@ -34,8 +37,6 @@ export default function MyPage() {
     const savedCharacter = user?.selectedCharacter || 'hwarang';
     setSelectedCharacter(savedCharacter);
   }, []);
-
-  const userData = storedUser;
 
   const characters = [
     { id: 'hwarang', name: '화랑이', emoji: '/assets/hwarang.png' },
@@ -295,8 +296,12 @@ export default function MyPage() {
         <BottomNavigation />
 
         {/* 기타 모달 컴포넌트 */}
-        {showEditModal && (
-        <EditProfileModal userData={userData} onClose={() => setShowEditModal(false)} />
+        {showEditModal && userData && (
+        <EditProfileModal
+          userData={userData}
+          onClose={() => setShowEditModal(false)}
+          onUpdateUser={(updatedUser) => setUserData(updatedUser)}
+        />
       )}
       {showContactModal && (
         <ContactModal onClose={() => setShowContactModal(false)} />

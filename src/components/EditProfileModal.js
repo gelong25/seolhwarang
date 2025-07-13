@@ -2,14 +2,34 @@
 
 import React, { useState } from 'react';
 
-export default function EditProfileModal({ userData, onClose }) {
+export default function EditProfileModal({ userData, onClose, onUpdateUser }) {
   const [name, setName] = useState(userData.name);
   const [email, setEmail] = useState(userData.email);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = () => {
-    // TODO: 실제 저장 처리 로직
-    alert('정보가 수정되었습니다.');
-    onClose();
+  const handleSave = async () => {
+    setIsLoading(true);
+    const res = await fetch('/api/update-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        originalEmail: userData.email,
+        name,
+        email,
+      }),
+    });
+
+    const data = await res.json();
+    setIsLoading(false);
+
+    if (res.ok) {
+      alert('정보가 수정되었습니다.');
+      localStorage.setItem('user', JSON.stringify(data.user));
+      onUpdateUser(data.user); 
+      onClose();
+    } else {
+      alert(data.error || '수정 중 오류가 발생했습니다.');
+    }
   };
 
   return (
@@ -36,7 +56,13 @@ export default function EditProfileModal({ userData, onClose }) {
 
         <div className="flex justify-end mt-6 space-x-2">
           <button onClick={onClose} className="px-4 py-2 text-gray-500 hover:underline">취소</button>
-          <button onClick={handleSave} className="px-4 py-2 bg-green-500 text-white rounded-xl">저장</button>
+          <button 
+            onClick={handleSave} 
+            className="px-4 py-2 bg-green-500 text-white rounded-xl"
+            disabled={isLoading}
+          >
+            {isLoading ? '저장 중...' : '저장'}
+          </button>
         </div>
       </div>
     </div>
