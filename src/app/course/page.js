@@ -32,19 +32,6 @@ export default function Courses() {
     difficultyText: getDifficultyText(course.difficulty)
   }));
 
-  console.log(getDifficultyColor(courses.difficulty));
-
-  courses.forEach(c => {
-    console.log(`난이도: ${c.difficulty} → 색상: ${getDifficultyColor(c.difficulty)}`);
-  });
-
-  allCourses.forEach(course => {
-    const [bg, border] = course.color.split(' ');
-    console.log(
-      `[${course.title}] bg: ${bg}, border: ${border}`
-    );
-  });
-
   const filteredCourses = selectedCategory === 'all' 
     ? allCourses 
     : allCourses.filter(course => course.category === selectedCategory);
