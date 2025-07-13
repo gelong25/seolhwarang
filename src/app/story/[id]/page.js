@@ -54,7 +54,8 @@ export default function StoryPage({ params }) {
       title: '용머리해안의 전설',
       location: '용머리해안',
       image: '/assets/dragon.png',
-      audioUrl: '/audio/dragon-story.mp3', // 실제 오디오 파일 경로
+      // TODO: 오디오 파일 URL을 백엔드에서 story 데이터에 포함시켜 전달받도록 수정
+      audioUrl: '/audio/dragon-story.mp3',
       fullStory: `옛날 옛적, 제주도 서쪽 끝에 있는 용머리해안에는 신비로운 전설이 있었어요.
 
 바다 깊은 곳에 사는 용왕님이 육지로 올라와 쉬던 곳이 바로 이곳이라고 해요. 용왕님은 매일 밤 이곳에 올라와 별을 보며 제주 사람들의 안전을 지켜주었답니다.
@@ -86,13 +87,16 @@ export default function StoryPage({ params }) {
 
   useEffect(() => {
     const storyId = params?.id || '1';
+    // TODO: storyId 기반으로 백엔드에서 스토리 데이터 fetch 필요
     setStoryData(stories[storyId]);
     
     // 선택된 캐릭터 가져오기
+    // TODO: 백엔드 또는 사용자 세션에서 캐릭터 정보 조회
     const character = localStorage.getItem('selectedCharacter') || 'hwarang';
     setSelectedCharacter(character);
   }, [params]);
 
+  // TODO: 실제 오디오 객체 생성 및 컨트롤 필요 
   useEffect(() => {
     let interval;
     if (isPlaying) {

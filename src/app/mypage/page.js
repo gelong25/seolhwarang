@@ -4,27 +4,39 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; 
 import Head from 'next/head';
 import BottomNavigation from '@/components/BottomNavigation';
+import SubscriptionModal from '@/components/SubscriptionModal';
+import EditProfileModal from '@/components/EditProfileModal';
+import ContactModal from '@/components/ContactModal';
 
 export default function MyPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState('hwarang');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [userData, setUserData] = useState(null); 
+
+  const storedUser = typeof window !== 'undefined' 
+  ? JSON.parse(localStorage.getItem('user')) 
+  : null;
 
   useEffect(() => {
-    // 캐릭터 정보 가져오기
-    const character = localStorage.setItem('selectedCharacter', 'hwarang');
-    setSelectedCharacter(character);
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) {
+      setUserData(storedUser);
+      setIsLoggedIn(true);
+      setSelectedCharacter(storedUser.selectedCharacter || 'hwarang');
+    }
   }, []);
 
-  // 사용자 더미 데이터
-  const userData = {
-    name: '포비야',
-    email: 'kimjeju@example.com',
-    points: 1250,
-    completedMissions: 3,
-    isSubscribed: false
-  };
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const savedCharacter = user?.selectedCharacter || 'hwarang';
+    setSelectedCharacter(savedCharacter);
+  }, []);
 
   const characters = [
     { id: 'hwarang', name: '화랑이', emoji: '/assets/hwarang.png' },
@@ -42,8 +54,21 @@ export default function MyPage() {
     return characters.find(char => char.id === selectedCharacter) || characters[0];
   };
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
+  const handleLogin = async () => {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+  
+    const data = await res.json();
+    if (res.ok) {
+      alert('로그인 성공!');
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setIsLoggedIn(true); 
+    } else {
+      alert(data.error);
+    }
   };
 
   const handleSubscribe = () => {
@@ -100,8 +125,25 @@ export default function MyPage() {
               </div>
             </div>
 
-            {/* 로그인 버튼 */}
             <div className="space-y-3 mb-6">
+              {/* 이메일, 비밀번호 입력 */}
+            <div className="space-y-4 mb-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="이메일 입력"
+                className="w-full px-4 py-2 border rounded-xl"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="비밀번호 입력"
+                className="w-full px-4 py-2 border rounded-xl"
+              />
+            </div>
+            {/* 로그인 버튼 */}
               <button
                 onClick={handleLogin}
                 className="w-full px-6 py-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-2xl text-lg font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
@@ -124,14 +166,14 @@ export default function MyPage() {
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">⭐</span>
                   <div>
-                    <p className="text-lg font-bold text-gray-800">{userData.points.toLocaleString()}P</p>
+                    <p className="text-lg font-bold text-gray-800">{(userData.points ?? 0).toLocaleString()}P</p>
                     <p className="text-sm text-gray-500">모험 포인트</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl">🏆</span>
                   <div>
-                    <p className="text-lg font-bold text-gray-800">{userData.completedMissions}개</p>
+                    <p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>
                     <p className="text-sm text-gray-500">완료한 미션</p>
                   </div>
                 </div>
@@ -219,18 +261,25 @@ export default function MyPage() {
               {/* 기타 메뉴 */}
               <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm">
                 <div className="p-4 space-y-1">
-                  <button className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center">
-                    <span className="mr-3">⚙️</span>
-                    내 정보 수정
-                  </button>
-                  <button className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center">
-                    <span className="mr-3">💬</span>
-                    문의하기
-                  </button>
+                <button
+                onClick={() => setShowEditModal(true)}
+                className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
+              >
+                <span className="mr-3">⚙️</span>
+                내 정보 수정
+              </button>
+              <button
+                onClick={() => setShowContactModal(true)}
+                className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
+              >
+                <span className="mr-3">💬</span>
+                문의하기
+              </button>
                   <button 
                     onClick={() => setIsLoggedIn(false)}
                     className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-red-600 flex items-center"
                   >
+                    {/* TODO: 로그아웃 처리 - 세션/토큰 제거 및 백엔드 로그아웃 호출 필요 */}
                     <span className="mr-3">🚪</span>
                     로그아웃
                   </button>
@@ -241,32 +290,22 @@ export default function MyPage() {
         )}
 
         {/* 구독 모달 */}
-        {showSubscriptionModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">🚀</span>
-                </div>
-                <h3 className="text-lg font-bold text-gray-800 mb-2">
-                  아직 준비 중이에요!
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  곧 만나요
-                </p>
-                <button
-                  onClick={closeModal}
-                  className="w-full py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-xl font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
-                >
-                  확인
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {showSubscriptionModal && <SubscriptionModal onClose={closeModal} />}
 
         {/* 하단 내비게이션 */}
         <BottomNavigation />
+
+        {/* 기타 모달 컴포넌트 */}
+        {showEditModal && userData && (
+        <EditProfileModal
+          userData={userData}
+          onClose={() => setShowEditModal(false)}
+          onUpdateUser={(updatedUser) => setUserData(updatedUser)}
+        />
+      )}
+      {showContactModal && (
+        <ContactModal onClose={() => setShowContactModal(false)} />
+      )}
       </div>
     </div>
   );
