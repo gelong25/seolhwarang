@@ -83,7 +83,106 @@ export default function StoryPage({ params }) {
           image: '/assets/gyuri.png'
         }
       }
+    },
+
+    2: {
+      id: 2,
+      title: '한라산 산신령 이야기',
+      location: '한라산',
+      image: '/assets/guardian.png',
+      // TODO: 오디오 파일 URL을 백엔드에서 story 데이터에 포함시켜 전달받도록 수정
+      audioUrl: '/audio/mountain-story.mp3',
+      fullStory: `옛날 옛적, 한라산 꼭대기에는 산신령이 살고 있었어요.
+
+산신령은 산을 오르는 사람들에게 용기와 건강을 주며 지켜주었답니다. 어느 날, 한 청년이 소원을 빌기 위해 산신령을 찾았는데...`,
+      characters: {
+        hwarang: {
+          name: '화랑이',
+          voice: '상냥한 목소리',
+          image: '/assets/hwarang.png'
+        },
+        dolhareubang: {
+          name: '돌이방이',
+          voice: '든든한 목소리',
+          image: '/assets/doribangi.png'
+        },
+        tangerine: {
+          name: '귤이',
+          voice: '밝은 목소리',
+          image: '/assets/gyuri.png'
+        }
+      }
+    },
+    3: {
+      id: 3,
+      title: '성산일출봉의 비밀',
+      location: '성산일출봉',
+      image: '/assets/sungsan.png',
+      audioUrl: '/audio/sunrise-story.mp3',
+      fullStory: `성산일출봉에는 숨겨진 보물이 있다고 전해져요.
+  
+  해가 떠오를 때마다 바위 사이에서 빛나는 보석이 나타난다는 전설이 있답니다. 이 전설을 따라 많은 사람들이 성산일출봉을 찾아온다고 해요.`,
+      characters: {
+        hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
+        dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
+        tangerine: { name: '귤이', voice: '밝은 목소리', image: '/assets/gyuri.png' }
+      }
+    },
+    4: {
+      id: 4,
+      title: '제주 해녀의 하루',
+      location: '구좌읍 해녀마을',
+      image: '/assets/haenyeo.png',
+      audioUrl: '/audio/sunrise-story.mp3',
+      fullStory: `제주의 해녀들은 바다의 여신으로부터 특별한 힘을 받았다고 전해집니다.
+
+어린 시절부터 물질을 배우며 바다와 친구가 된 해녀들은 깊은 바다 속에서도 숨을 오래 참을 수 있는 능력을 갖추고 있어요.
+
+어느 날, 해녀 할머니는 어린 손녀에게 물질을 가르치며 바닷속의 신비한 세계를 소개했답니다. 바닷속에는 빛나는 소라와 전복, 그리고 바다 요정들이 살고 있었어요.
+
+할머니는 바닷속 보물들을 손녀와 함께 찾으며, 바다의 소중함과 자연을 아끼는 마음을 전해주었답니다.
+
+지금도 해녀들은 파도 소리와 함께 살아가며 제주 바다를 지키고 있어요.`,
+      characters: {
+        hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
+        dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
+        tangerine: { name: '귤이', voice: '밝은 목소리', image: '/assets/gyuri.png' }
+      }
+    },
+    5: {
+      id: 5,
+      title: '감귤 농장 탐험',
+      location: '서귀포 감귤농장',
+      image: '/assets/mandarin.png',
+      audioUrl: '/audio/mandarin-story.mp3',
+      fullStory: `제주의 감귤 농장에는 햇빛 요정이 살고 있다고 전해집니다.
+    
+    햇빛 요정은 매일 아침 감귤나무 사이를 날아다니며 달콤한 햇살을 나눠주지요. 그 덕분에 제주 감귤은 더욱 달고 향긋하게 자랄 수 있었어요.
+    
+    어느 날, 농장 주인은 작은 아이들에게 감귤 따는 법과 감귤이 자라는 과정을 알려주었답니다. 아이들은 신이 나서 감귤을 따고, 맛을 보며 웃음을 멈출 수 없었어요.
+    
+    또한, 감귤로 만든 청과 디저트를 함께 만들어 보면서 자연의 소중함과 농부들의 정성을 배웠답니다.
+    
+    제주 감귤은 단순한 과일이 아니라, 제주 사람들의 사랑과 자연의 기적이 담긴 보물이랍니다.`,
+      characters: {
+        hwarang: {
+          name: '화랑이',
+          voice: '상냥한 목소리',
+          image: '/assets/hwarang.png'
+        },
+        dolhareubang: {
+          name: '돌이방이',
+          voice: '든든한 목소리',
+          image: '/assets/doribangi.png'
+        },
+        tangerine: {
+          name: '귤이',
+          voice: '밝은 목소리',
+          image: '/assets/gyuri.png'
+        }
+      }
     }
+    
   };
 
   useEffect(() => {
