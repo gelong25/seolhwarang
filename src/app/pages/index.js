@@ -98,13 +98,13 @@ export default function Home() {
 
   if (showCharacterSelect) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sky-100 to-green-100 p-4">
+      <div className="min-h-screen bg-gray-50 ">
         <Head>
           <title>화랑이와 제주 모험</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
         </Head>
         
-        <div className="max-w-md mx-auto pt-20">
+        <div className="max-w-md mx-auto bg-gradient-to-b from-sky-100 to-green-100 min-h-screen p-4">
           <div className="text-center mb-8">
             <div className="w-32 h-32 rounded-full flex items-center justify-center text-6xl mx-auto shadow-lg overflow-hidden bg-white">
             <img src={currentCharacter.image} alt={currentCharacter.name} className="w-full h-full object-cover" />
@@ -182,7 +182,7 @@ export default function Home() {
             <div className="flex items-center space-x-2">
               <span className="text-2xl">🏆</span>
               <div>
-                {/*<p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>*/}
+                <p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>
                 <p className="text-sm text-gray-500">완료한 미션</p>
               </div>
             </div>
