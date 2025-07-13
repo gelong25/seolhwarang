@@ -1,6 +1,7 @@
+//app/course/route.js
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 import BottomNavigation from '@/components/BottomNavigation';
@@ -9,6 +10,7 @@ import characters from '@/data/character.json';
 import CourseModal from '@/components/CourseModal';
 import { getDifficultyColor, getDifficultyText } from '@/utils/courseUtils';
 import courses from '@/data/courses.json';
+import Header from '@/components/Header';
 
 export default function Courses() {
   const router = useRouter();
@@ -17,6 +19,19 @@ export default function Courses() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   // TODO: 사용자 레벨을 API로부터 가져오도록 수정
   const [userLevel, setUserLevel] = useState(3);
+
+  useEffect(() => {
+    if (selectedCourse || showSubscriptionModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    // 언마운트 시에도 원복
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedCourse, showSubscriptionModal]);
 
   // TODO: 백엔드에서 카테고리 리스트를 받아오도록 변경
   const categories = [
@@ -44,38 +59,17 @@ export default function Courses() {
   const currentCharacter = characters.find(c => c.id === selectedCharacterId);
 
   return (
+    
     <div className="min-h-screen bg-gray-50">
       <Head>
         <title>모험 코스 - 화랑이와 제주 모험</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="max-w-md mx-auto bg-white min-h-screen">
+      <div className="pb-24 max-w-md mx-auto bg-white min-h-screen">
         {/* 헤더 */}
-        <div className="bg-gradient-to-r from-indigo-400 to-purple-500 p-4 text-white">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <button
-                onClick={() => router.back()}
-                className="text-white hover:text-gray-200 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <div>
-                <h1 className="text-xl font-bold">모험 코스</h1>
-                <p className="text-sm opacity-90">레벨 {userLevel} 모험가</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm opacity-90">완료</div>
-              <div className="text-lg font-bold">
-                {allCourses.filter(c => c.completed).length}/{allCourses.length}
-              </div>
-            </div>
-          </div>
-        </div>
+        <Header title="모험 코스" subtitle={`레벨 ${userLevel} 모험가`} gradient="from-indigo-400 to-purple-500" />
+
 
         {/* 캐릭터 격려 */}
         <div className="p-4 bg-indigo-50 border-b">
@@ -101,7 +95,7 @@ export default function Courses() {
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+              className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedCategory === category.id
                   ? 'bg-indigo-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'

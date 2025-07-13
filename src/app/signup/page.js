@@ -1,3 +1,4 @@
+//app/signup/page.js
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -17,7 +18,7 @@ export default function SignupPage() {
     const res = await fetch('/api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({ id, name, email, password })
     });
   
     const data = await res.json();

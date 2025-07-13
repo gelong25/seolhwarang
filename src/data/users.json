@@ -1,7 +1,20 @@
 [
   {
-    "name": "김화랑씨",
+    "id": "0",
+    "name": "김화랑",
     "email": "sss@naver.com",
     "password": "Qwer123$"
+  },
+  {
+    "id": "1",
+    "name": "이주연",
+    "email": "ju010320@naver.com",
+    "password": "Aasdf1234*"
+  },
+  {
+    "id": "2",
+    "name": "이주봉",
+    "email": "ju010320@gmail.com",
+    "password": "Aasdf1234*"
   }
 ]

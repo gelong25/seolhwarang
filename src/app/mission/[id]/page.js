@@ -1,12 +1,13 @@
+//app/mission/[id]/page.js
 "use client";
-
+import Header from '@/components/Header'; // 여니추가
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Head from 'next/head';
 import characters from '@/data/character.json';
+import BottomNavigation from '@/components/BottomNavigation';
 
-export default function Mission() {
+export default function Mission() { // 여기 수정
   const params = useParams();
   const id = params.id;  
   const router = useRouter();
@@ -66,25 +67,8 @@ export default function Mission() {
       </Head>
 
       <div className="max-w-md mx-auto bg-white min-h-screen">
-        {/* 헤더 */}
-        <div className="bg-gradient-to-r from-purple-400 to-pink-500 p-4 text-white">
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => router.back()}
-              className="text-white hover:text-gray-200 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <div>
-              <h1 className="text-xl font-bold">미션 수행</h1>
-              <p className="text-sm opacity-90">
-                {currentMission + 1} / {missions.length}
-              </p>
-            </div>
-          </div>
-        </div>
+      <Header title="미션 수행" subtitle={`${currentMission + 1} / ${missions.length}`} gradient="from-purple-400 to-pink-500" />
+
 
         {/* 진행 바 */}
         <div className="p-4 bg-white border-b">
@@ -127,7 +111,7 @@ export default function Mission() {
               <p className="text-gray-600 mb-8 leading-relaxed">{mission.description}</p>
               
               <div className="mb-8">
-                <div className="inline-flex items-center space-x-2 px-4 py-2 bg-yellow-50 rounded-full border border-yellow-200">
+                <div className="inline-flex items-center space-x-2 px-4 py-2 bg-yellow-50 rounded-full border border-yellow-200 cursor-default">
                   <span className="text-yellow-500">⭐</span>
                   <span className="text-sm font-medium text-gray-700">
                     {mission.points}P 획득 가능
@@ -172,17 +156,21 @@ export default function Mission() {
                       용머리해안의 이름은 어떻게 생겨났을까요?
                     </h3>
                     <div className="space-y-2">
-                      <button className="w-full p-3 text-left rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                        ① 용이 살았던 곳이라서
-                      </button>
-                      <button
-                        onClick={handleMissionComplete}
-                        className="w-full p-3 text-left rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-                      >
-                        ② 바위 모양이 용의 머리를 닮아서
-                      </button>
-                      <button className="w-full p-3 text-left rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                        ③ 용궁으로 가는 입구라서
+                    <button
+                      className="w-full p-3 text-left rounded-lg border border-gray-200 text-gray-800 bg-blue-50 hover:shadow-md transition-shadow"
+                    >
+                      ① 용이 살았던 곳이라서
+                    </button>
+                    <button
+                      onClick={handleMissionComplete}
+                      className="w-full p-3 text-left rounded-lg border border-gray-200 text-gray-800 bg-blue-50 hover:shadow-md transition-shadow"
+                    >
+                      ② 바위 모양이 용의 머리를 닮아서
+                    </button>
+                    <button
+                      className="w-full p-3 text-left rounded-lg border border-gray-200 text-gray-800 bg-blue-50 hover:shadow-md transition-shadow"
+                    >
+                      ③ 용궁으로 가는 입구라서
                       </button>
                     </div>
                   </div>
@@ -196,7 +184,7 @@ export default function Mission() {
               <p className="text-gray-600 mb-6">
                 <span className="font-medium text-purple-600">+{mission.points}P</span> 획득!
               </p>
-              <div className="inline-flex items-center space-x-2 px-4 py-2 bg-green-50 rounded-full border border-green-200">
+              <div className="inline-flex items-center space-x-2 px-4 py-2 bg-green-50 rounded-full border border-green-200 cursor-pointer">
                 <span className="text-green-500">✅</span>
                 <span className="text-sm font-medium text-gray-700">
                   {currentMission < missions.length - 1 ? '다음 미션으로...' : '모든 미션 완료!'}
@@ -206,6 +194,8 @@ export default function Mission() {
           )}
         </div>
       </div>
+      {/* 하단 네비게이션 */}
+              <BottomNavigation />
     </div>
   );
 }
