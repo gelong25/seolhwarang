@@ -109,8 +109,109 @@ export default function StoryPage({ params }) {
     return () => clearInterval(interval);
   }, [isPlaying, duration]);
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+  const togglePlay = async () => {
+    if (!isPlaying) {
+      try {
+        // 로딩 상태 표시
+        setIsPlaying(true);
+        
+        // TTS API 호출
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: storyData.fullStory,
+            character: selectedCharacter,
+            voice: storyData.characters[selectedCharacter].voice
+          })
+        });
+        console.log(response);
+        if (!response.ok) {
+          throw new Error('TTS API 호출 실패');
+        }
+
+        const ttsData = await response.json();
+        console.log('ElevenLabs TTS 응답:', ttsData);
+        
+        if (ttsData.success) {
+          if (ttsData.useBrowserTTS) {
+            // 브라우저 내장 TTS 사용
+            if ('speechSynthesis' in window) {
+              const utterance = new SpeechSynthesisUtterance(ttsData.text);
+              
+              // 캐릭터별 음성 설정
+              const voices = speechSynthesis.getVoices();
+              const koreanVoices = voices.filter(voice => voice.lang.includes('ko'));
+              
+              if (koreanVoices.length > 0) {
+                // 캐릭터에 따라 다른 음성 선택
+                if (ttsData.character === 'dolhareubang') {
+                  utterance.voice = koreanVoices.find(voice => voice.name.includes('Male')) || koreanVoices[0];
+                  utterance.pitch = 0.8;
+                  utterance.rate = 0.9;
+                } else if (ttsData.character === 'tangerine') {
+                  utterance.voice = koreanVoices[0];
+                  utterance.pitch = 1.2;
+                  utterance.rate = 1.1;
+                } else { // hwarang
+                  utterance.voice = koreanVoices[0];
+                  utterance.pitch = 1.0;
+                  utterance.rate = 1.0;
+                }
+              }
+              
+              utterance.onend = () => {
+                setIsPlaying(false);
+              };
+              
+              utterance.onerror = (e) => {
+                console.error('TTS 오류:', e);
+                setIsPlaying(false);
+                alert('음성 재생 중 오류가 발생했습니다.');
+              };
+              
+              speechSynthesis.speak(utterance);
+            } else {
+              throw new Error('브라우저가 음성 합성을 지원하지 않습니다.');
+            }
+          } else if (ttsData.audioUrl) {
+            // ElevenLabs 오디오 재생
+            const audio = new Audio(ttsData.audioUrl);
+            
+            // 오디오 리스너
+            audio.addEventListener('ended', () => {
+              setIsPlaying(false);
+            });
+            
+            audio.addEventListener('error', (e) => {
+              console.error('오디오 재생 오류:', e);
+              setIsPlaying(false);
+              alert('음성 재생 중 오류가 발생했습니다.');
+            });
+            
+            // 오디오 재생 시작
+            await audio.play();
+          } else {
+            throw new Error('오디오 데이터가 없습니다.');
+          }
+        } else {
+          throw new Error(ttsData.message || '음성 생성 실패');
+        }
+        
+      } catch (error) {
+        console.error('TTS 오류:', error);
+        setIsPlaying(false);
+        alert('음성 생성 중 오류가 발생했습니다: ' + error.message);
+      }
+    } else {
+      // 재생 중지
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      setIsPlaying(false);
+    }
   };
 
   const toggleMute = () => {
