@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Head from 'next/head';
 import BottomNavigation from '@/components/BottomNavigation';
@@ -310,26 +310,53 @@ function QuizMission({ mission, onComplete }) {
 function PhotoMission({ mission, onComplete }) {
   const [photoTaken, setPhotoTaken] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+  const [photoDataUrl, setPhotoDataUrl] = useState(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+
+  useEffect(() => {
+    if (showCamera) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          streamRef.current = stream;
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        })
+        .catch((err) => {
+          console.error("카메라 접근 실패:", err);
+          alert("카메라 접근이 거부되었거나 사용할 수 없습니다.");
+          setShowCamera(false);
+        });
+    }
+
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [showCamera]);
 
   const handleTakePhoto = () => {
     setShowCamera(true);
-    // 실제 카메라 기능 시뮬레이션
-    setTimeout(() => {
-      setPhotoTaken(true);
-      setShowCamera(false);
-    }, 2000);
   };
 
-  if (showCamera) {
-    return (
-      <div className="text-center">
-        <div className="bg-gray-200 rounded-xl p-8 mb-6">
-          <div className="text-4xl mb-4">📷</div>
-          <p className="text-gray-600">카메라를 준비 중입니다...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleCapture = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    if (video && canvas) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/png');
+      setPhotoDataUrl(dataUrl);
+      setPhotoTaken(true);
+      setShowCamera(false);
+    }
+  };
 
   return (
     <div className="text-center">
