@@ -96,7 +96,7 @@ const CourseModal = ({ course, onClose, setShowSubscriptionModal }) => {
               <h3 className="text-lg font-bold text-gray-800 mb-3">📊 코스 정보</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
-                  <div className={`text-sm px-2 py-1 rounded-full font-medium ${getDifficultyColor(course.difficulty)}`}>
+                  <div className={`text-sm px-2 py-1 rounded-full text-black font-medium ${getDifficultyColor(course.difficulty)}`}>
                     {getDifficultyText(course.difficulty)}
                   </div>
                   <p className="text-xs text-gray-500 mt-1">난이도</p>
@@ -108,7 +108,7 @@ const CourseModal = ({ course, onClose, setShowSubscriptionModal }) => {
                   <p className="text-xs text-gray-500 mt-1">미션 수</p>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm bg-yellow-100 px-2 py-1 rounded-full font-medium text-yellow-700">
+                  <div className="text-sm bg-yellow-100 px-2 py-1 rounded-full font-medium text-black">
                     {course.points}P
                   </div>
                   <p className="text-xs text-gray-500 mt-1">획득 포인트</p>
