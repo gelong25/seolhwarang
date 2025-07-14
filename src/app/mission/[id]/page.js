@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Head from 'next/head';
 import BottomNavigation from '@/components/BottomNavigation';
@@ -310,58 +310,95 @@ function QuizMission({ mission, onComplete }) {
 function PhotoMission({ mission, onComplete }) {
   const [photoTaken, setPhotoTaken] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+  const [photoDataUrl, setPhotoDataUrl] = useState(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+
+  useEffect(() => {
+    if (showCamera) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          streamRef.current = stream;
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        })
+        .catch((err) => {
+          console.error("카메라 접근 실패:", err);
+          alert("카메라 접근이 거부되었거나 사용할 수 없습니다.");
+          setShowCamera(false);
+        });
+    }
+
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [showCamera]);
 
   const handleTakePhoto = () => {
     setShowCamera(true);
-    // 실제 카메라 기능 시뮬레이션
-    setTimeout(() => {
-      setPhotoTaken(true);
-      setShowCamera(false);
-    }, 2000);
   };
 
-  if (showCamera) {
-    return (
-      <div className="text-center">
-        <div className="bg-gray-200 rounded-xl p-8 mb-6">
-          <div className="text-4xl mb-4">📷</div>
-          <p className="text-gray-600">카메라를 준비 중입니다...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleCapture = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    if (video && canvas) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/png');
+      setPhotoDataUrl(dataUrl);
+      setPhotoTaken(true);
+      setShowCamera(false);
+    }
+  };
 
   return (
     <div className="text-center">
       {!photoTaken ? (
-        <div>
-          <div className="bg-blue-50 rounded-xl p-6 mb-6">
-            <div className="text-4xl mb-4">📸</div>
-            <p className="text-gray-700 mb-4">
-              {mission.id === 'm1' ? '용머리해안의 멋진 풍경을' : 
-               mission.id === 'm4' ? '송씨영감의 흔적을' :
-               mission.id === 'm8' ? '당산에서 인사하는 모습을' :
-               mission.id === 'm9' ? '산호 모양을' : '아름다운 순간을'} 사진으로 남겨보세요!
-            </p>
-          </div>
-          
-          <button
-            onClick={handleTakePhoto}
-            className="w-full px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 mb-4"
-          >
-            📷 사진 촬영하기
-          </button>
-          
-        </div>
+        <>
+          {!showCamera ? (
+            <div>
+              <div className="bg-blue-50 rounded-xl p-6 mb-6">
+                <div className="text-4xl mb-4">📸</div>
+                <p className="text-gray-700 mb-4">
+                  {mission.id === 'm1' ? '용머리해안의 멋진 풍경을' :
+                    mission.id === 'm4' ? '송씨영감의 흔적을' :
+                      mission.id === 'm8' ? '당산에서 인사하는 모습을' :
+                        mission.id === 'm9' ? '산호 모양을' : '아름다운 순간을'} 사진으로 남겨보세요!
+                </p>
+              </div>
+              <button
+                onClick={handleTakePhoto}
+                className="w-full px-6 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 mb-4"
+              >
+                📷 카메라 실행하기
+              </button>
+            </div>
+          ) : (
+            <div>
+              <video ref={videoRef} autoPlay playsInline className="w-full rounded-xl mb-4" />
+              <canvas ref={canvasRef} style={{ display: 'none' }} />
+              <button
+                onClick={handleCapture}
+                className="w-full px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 mb-4"
+              >
+                📸 사진 촬영
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <div>
           <div className="bg-green-50 rounded-xl p-6 mb-6">
             <div className="text-4xl mb-4">✅</div>
             <p className="text-gray-700 mb-4">멋진 사진을 찍었습니다!</p>
-            <div className="bg-gray-200 rounded-xl p-8">
-              <div className="text-2xl">🖼️</div>
-              <p className="text-sm text-gray-500 mt-2">촬영된 사진</p>
-            </div>
+            <img src={photoDataUrl} alt="촬영된 사진" className="rounded-xl w-full mb-4" />
           </div>
           
           <button
