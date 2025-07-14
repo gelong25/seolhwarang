@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
 
@@ -39,13 +39,28 @@ const ChevronLeftIcon = (props) => (
 
 export default function StoryPage({ params }) {
   const router = useRouter();
+  const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(180); // 3분 예시
+  const [duration, setDuration] = useState(0);
   const [storyData, setStoryData] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState('hwarang');
   const [stories, setStories] = useState([]);
+  const [audioUrl, setAudioUrl] = useState('');
+
+  // 캐릭터별 MP3 파일 매핑 함수
+  const getAudioUrl = (courseId, characterId) => {
+    // 캐릭터 ID를 파일명에 맞게 변환
+    const characterMap = {
+      'hwarang': 'hwarang',
+      'dolhareubang': 'dolhareubang', 
+      'tangerine': 'tangerine'
+    };
+    
+    const characterName = characterMap[characterId] || 'hwarang';
+    return `/assets/mp3/${characterName}${courseId}.mp3`;
+  };
 
   // 스토리 데이터 로드
   useEffect(() => {
@@ -102,6 +117,52 @@ export default function StoryPage({ params }) {
     loadStories();
   }, [params]);
 
+  // 선택된 캐릭터 로드 및 오디오 URL 설정
+  useEffect(() => {
+    const character = localStorage.getItem('selectedCharacter') || 'hwarang';
+    setSelectedCharacter(character);
+    
+    if (storyData) {
+      const newAudioUrl = getAudioUrl(storyData.id, character);
+      setAudioUrl(newAudioUrl);
+    }
+  }, [storyData]);
+
+  // 오디오 요소 설정
+  useEffect(() => {
+    if (audioUrl && audioRef.current) {
+      audioRef.current.src = audioUrl;
+      audioRef.current.load();
+      
+      // 오디오 메타데이터 로드 이벤트
+      const handleLoadedMetadata = () => {
+        setDuration(audioRef.current.duration);
+      };
+      
+      // 오디오 재생 시간 업데이트 이벤트
+      const handleTimeUpdate = () => {
+        setCurrentTime(audioRef.current.currentTime);
+      };
+      
+      // 오디오 재생 종료 이벤트
+      const handleEnded = () => {
+        setIsPlaying(false);
+        setCurrentTime(0);
+      };
+
+      const audio = audioRef.current;
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.addEventListener('timeupdate', handleTimeUpdate);
+      audio.addEventListener('ended', handleEnded);
+
+      return () => {
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.removeEventListener('timeupdate', handleTimeUpdate);
+        audio.removeEventListener('ended', handleEnded);
+      };
+    }
+  }, [audioUrl]);
+
   // 코스 ID에 따른 위치 정보 반환
   const getLocationByCourseId = (courseId) => {
     const locationMap = {
@@ -144,7 +205,7 @@ export default function StoryPage({ params }) {
         location: '외도 마을',
         image: '/assets/guardian.png',
         audioUrl: '/audio/guardian-story.mp3',
-        fullStory: `옛날옛날, 제주 외도 마을에 홍좌수라는 멋진 어른이 살았어요.\n힘도 세고 똑똑해서, 마을 사람들은 조금 무서워하면서도 좋아했죠.\n\n그러던 어느 날, 꿈속에 하얀 머리의 할아버지가 나타나 말했어요.\n“나는 이 마을을 지켜주는 송씨영감이란다.\n나를 모실 집을 만들어 주면, 너랑 마을에 좋은 일이 생길 거야!”\n\n홍좌수는 잠에서 깨자마자 신을 모시는 집을 지었어요.\n그날부터 마법처럼 좋은 일들이 생겼어요!\n집안은 점점 부자가 되고, 마을도 더 행복해졌답니다.\n\n그런데 몇몇 사람이 부러워하며 나쁜 계획을 꾸몄어요.\n바로 그날 밤, 꿈에 다시 송씨영감이 나와 말했어요.\n“그때가 오면, 조용히 가만히 있어야 해. 그러면 무사할 거야.”\n\n홍좌수는 약속을 잘 지켜 위험한 순간을 무사히 넘겼고,\n그 뒤로도 송씨영감을 정성껏 모셨어요.\n지금도 외도 마을 사람들은 매년 제사를 지내며\n행복과 복을 빌고 있답니다!`,
+        fullStory: `옛날옛날, 제주 외도 마을에 홍좌수라는 멋진 어른이 살았어요.\n힘도 세고 똑똑해서, 마을 사람들은 조금 무서워하면서도 좋아했죠.\n\n그러던 어느 날, 꿈속에 하얀 머리의 할아버지가 나타나 말했어요.\n"나는 이 마을을 지켜주는 송씨영감이란다.\n나를 모실 집을 만들어 주면, 너랑 마을에 좋은 일이 생길 거야!"\n\n홍좌수는 잠에서 깨자마자 신을 모시는 집을 지었어요.\n그날부터 마법처럼 좋은 일들이 생겼어요!\n집안은 점점 부자가 되고, 마을도 더 행복해졌답니다.\n\n그런데 몇몇 사람이 부러워하며 나쁜 계획을 꾸몄어요.\n바로 그날 밤, 꿈에 다시 송씨영감이 나와 말했어요.\n"그때가 오면, 조용히 가만히 있어야 해. 그러면 무사할 거야."\n\n홍좌수는 약속을 잘 지켜 위험한 순간을 무사히 넘겼고,\n그 뒤로도 송씨영감을 정성껏 모셨어요.\n지금도 외도 마을 사람들은 매년 제사를 지내며\n행복과 복을 빌고 있답니다!`,
         characters: {
           hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
           dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
@@ -157,7 +218,7 @@ export default function StoryPage({ params }) {
         location: '모슬포 마을',
         image: '/assets/haenyeo.png',
         audioUrl: '/audio/haenyeo-story.mp3',
-        fullStory: `옛날 제주도 모슬포 마을에 고운 얼굴의 착한 해녀가 살고 있었어요.\n\n그녀는 파도 속에서도 누구보다 씩씩하게 물질을 했지요.\n\n어느 날, 큰 바다에서 거북이 한 마리가 그물에 걸려 허우적거리고 있었어요.\n\n해녀는 그 거북이를 조심스럽게 바다로 돌려보내 주었답니다.\n\n며칠 뒤, 해녀는 깊은 바다에서 물질을 하다가 갑자기 눈앞이 반짝이는 궁전으로 바뀌는 걸 보았어요.\n\n그곳은 바로 용궁, 바닷속 왕국이었어요!\n\n그곳에 있던 산호 여왕님이 다가와 말했어요.\n\n“네가 우리 아기를 살려주었구나. 고마워. 이 산호꽃을 간직하렴. 이 꽃은 널 무서운 병에서 지켜줄 거란다.”\n\n그리고 병든 아버지를 위한 신비한 약도 함께 건네주었어요.\n\n그날 이후, 해녀는 마을에서도 가장 건강하고 씩씩한 사람이 되었어요.\n\n사람들은 그녀를 ‘산호 해녀’라 불렀고,\n\n그녀의 이야기는 제주 바다와 함께 오래도록 전해졌답니다.`,
+        fullStory: `옛날 제주도 모슬포 마을에 고운 얼굴의 착한 해녀가 살고 있었어요.\n\n그녀는 파도 속에서도 누구보다 씩씩하게 물질을 했지요.\n\n어느 날, 큰 바다에서 거북이 한 마리가 그물에 걸려 허우적거리고 있었어요.\n\n해녀는 그 거북이를 조심스럽게 바다로 돌려보내 주었답니다.\n\n며칠 뒤, 해녀는 깊은 바다에서 물질을 하다가 갑자기 눈앞이 반짝이는 궁전으로 바뀌는 걸 보았어요.\n\n그곳은 바로 용궁, 바닷속 왕국이었어요!\n\n그곳에 있던 산호 여왕님이 다가와 말했어요.\n\n"네가 우리 아기를 살려주었구나. 고마워. 이 산호꽃을 간직하렴. 이 꽃은 널 무서운 병에서 지켜줄 거란다."\n\n그리고 병든 아버지를 위한 신비한 약도 함께 건네주었어요.\n\n그날 이후, 해녀는 마을에서도 가장 건강하고 씩씩한 사람이 되었어요.\n\n사람들은 그녀를 '산호 해녀'라 불렀고,\n\n그녀의 이야기는 제주 바다와 함께 오래도록 전해졌답니다.`,
         characters: {
           hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
           dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
@@ -196,44 +257,37 @@ export default function StoryPage({ params }) {
     }
   };
 
-  useEffect(() => {
-    // 선택된 캐릭터 가져오기
-    const character = localStorage.getItem('selectedCharacter') || 'hwarang';
-    setSelectedCharacter(character);
-  }, []);
-
-  // 오디오 플레이어 시뮬레이션
-  useEffect(() => {
-    let interval;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime(prev => {
-          if (prev >= duration) {
-            setIsPlaying(false);
-            return duration;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, duration]);
-
+  // 오디오 재생/정지 토글
   const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(error => {
+          console.error('오디오 재생 오류:', error);
+        });
+      }
+      setIsPlaying(!isPlaying);
+    }
   };
 
+  // 음소거 토글
   const toggleMute = () => {
-    setIsMuted(!isMuted);
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
   };
 
+  // 시간 포맷팅
   const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
+    const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const progressPercentage = (currentTime / duration) * 100;
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   if (!storyData) {
     return (
@@ -254,6 +308,9 @@ export default function StoryPage({ params }) {
         <title>{storyData.title} - 화랑이와 제주 모험</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+
+      {/* 숨겨진 오디오 요소 */}
+      <audio ref={audioRef} preload="metadata" />
 
       <div className="max-w-md mx-auto bg-white min-h-screen">
         {/* 헤더 */}
@@ -304,38 +361,33 @@ export default function StoryPage({ params }) {
             </div>
 
             {/* 재생 버튼 */}
-            <div className="flex items-center justify-start space-x-3">
-            <button
-              onClick={togglePlay}
-              className="p-3 rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-white hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-lg"
-            >
-              {isPlaying ? (
-                <PauseIcon className="w-6 h-6" />
-              ) : (
-                <PlayIcon className="w-6 h-6" />
-              )}
-            </button>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={toggleMute}
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                {isMuted ? (
+                  <VolumeXIcon className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <Volume2Icon className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
+              
+              <button
+                onClick={togglePlay}
+                className="p-3 rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-white hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-lg"
+              >
+                {isPlaying ? (
+                  <PauseIcon className="w-6 h-6" />
+                ) : (
+                  <PlayIcon className="w-6 h-6" />
+                )}
+              </button>
             </div>
           </div>
 
-          {/* 진행률 표시 (옵션) */}
+          {/* 진행률 표시 */}
           <div className="mt-4">
-            {/* <div className="flex justify-between text-sm text-gray-500 mb-2"> */}
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-            {/* <div className="w-full bg-gray-200 rounded-full h-2"> */}
-              {/* <div 
-                className="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${progressPercentage}%` }}
-              ></div> */}
-            {/* </div> */}
-          {/* </div> */}
-        </div>
-
-        {/* 오디오 플레이어 */}
-        {/* <div className="p-6 bg-white border-b">
-          <div className="mb-4">
             <div className="flex justify-between text-sm text-gray-500 mb-2">
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration)}</span>
@@ -347,35 +399,7 @@ export default function StoryPage({ params }) {
               ></div>
             </div>
           </div>
-
-          <div className="flex items-center justify-center space-x-6">
-            <button
-              onClick={toggleMute}
-              className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
-              {isMuted ? (
-                <VolumeXIcon className="w-6 h-6 text-gray-600" />
-              ) : (
-                <Volume2Icon className="w-6 h-6 text-gray-600" />
-              )}
-            </button>
-
-            <button
-              onClick={togglePlay}
-              className="p-4 rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-white hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-lg"
-            >
-              {isPlaying ? (
-                <PauseIcon className="w-8 h-8" />
-              ) : (
-                <PlayIcon className="w-8 h-8" />
-              )}
-            </button>
-
-            <button className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-              <span className="text-xl">⚙️</span>
-            </button>
-          </div>
-        </div> */}
+        </div>
 
         {/* 스토리 텍스트 */}
         <div className="p-6">

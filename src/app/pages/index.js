@@ -91,7 +91,30 @@ export default function Home() {
                   <h3 className="font-bold text-lg text-gray-800">{char.name}</h3>
                   <p className="text-gray-500 text-sm">{char.voice}</p>
                 </div>
-                <button className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // 상위 div 클릭 방지
+
+                    let audioPath = '';
+                    switch (char.id) {
+                      case 'hwarang':
+                        audioPath = '/assets/mp3/hwarang0.mp3';
+                        break;
+                      case 'dolhareubang':
+                        audioPath = '/assets/mp3/dolhareubang0.mp3';
+                        break;
+                      case 'tangerine':
+                        audioPath = '/assets/mp3/tangerine0.mp3';
+                        break;
+                      default:
+                        return; // 해당 없음
+                    }
+
+                    const audio = new Audio(audioPath);
+                    audio.play();
+                  }}
+                  className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors"
+                >
                   들어보기
                 </button>
               </div>
