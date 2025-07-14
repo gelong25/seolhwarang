@@ -1,10 +1,8 @@
-//app/story/[id]/page.js
 "use client";
 
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
-// import { ChevronLeftIcon, PlayIcon, PauseIcon, VolumeXIcon, Volume2Icon } from '@heroicons/react/24/outline';
 
 // 아이콘 컴포넌트 
 const ChevronLeftIcon = (props) => (
@@ -47,6 +45,128 @@ export default function StoryPage({ params }) {
   const [duration, setDuration] = useState(180); // 3분 예시
   const [storyData, setStoryData] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState('hwarang');
+  const [stories, setStories] = useState([]);
+
+  // 스토리 데이터 로드
+  useEffect(() => {
+    const loadStories = async () => {
+      try {
+        // story.json 파일을 읽어오기
+        const fileData = await window.fs.readFile('story.json', { encoding: 'utf8' });
+        const storiesData = JSON.parse(fileData);
+        setStories(storiesData);
+        
+        // 현재 코스 ID에 해당하는 스토리 찾기
+        const courseId = parseInt(params?.id || '1');
+        const currentStory = storiesData.find(story => story.courseId === courseId);
+        
+        if (currentStory) {
+          // JSON 데이터를 기존 스토리 형태로 변환
+          const formattedStory = {
+            id: currentStory.courseId,
+            title: currentStory.title,
+            location: getLocationByCourseId(currentStory.courseId),
+            image: getImageByCourseId(currentStory.courseId),
+            audioUrl: currentStory.audioUrl,
+            fullStory: currentStory.fullStory,
+            characters: {
+              hwarang: {
+                name: '화랑이',
+                voice: '상냥한 목소리',
+                image: '/assets/hwarang.png'
+              },
+              dolhareubang: {
+                name: '돌이방이',
+                voice: '든든한 목소리',
+                image: '/assets/doribangi.png'
+              },
+              tangerine: {
+                name: '귤이',
+                voice: '밝은 목소리',
+                image: '/assets/gyuri.png'
+              }
+            }
+          };
+          setStoryData(formattedStory);
+        } else {
+          console.error('해당 코스 ID의 스토리를 찾을 수 없습니다:', courseId);
+        }
+        
+      } catch (error) {
+        console.error('스토리 데이터 로드 오류:', error);
+        // 오류 발생 시 기본 스토리 데이터 사용
+        setStoryData(getDefaultStoryData(parseInt(params?.id || '1')));
+      }
+    };
+
+    loadStories();
+  }, [params]);
+
+  // 코스 ID에 따른 위치 정보 반환
+  const getLocationByCourseId = (courseId) => {
+    const locationMap = {
+      1: '용머리해안',
+      2: '외도 마을',
+      4: '모슬포 마을'
+    };
+    return locationMap[courseId] || '제주도';
+  };
+
+  // 코스 ID에 따른 이미지 반환
+  const getImageByCourseId = (courseId) => {
+    const imageMap = {
+      1: '/assets/dragon.png',
+      2: '/assets/guardian.png',
+      4: '/assets/haenyeo.png'
+    };
+    return imageMap[courseId] || '/assets/default.png';
+  };
+
+  // 기본 스토리 데이터 (JSON 로드 실패 시 사용)
+  const getDefaultStoryData = (courseId) => {
+    const defaultStories = {
+      1: {
+        id: 1,
+        title: '용머리해안의 전설',
+        location: '용머리해안',
+        image: '/assets/dragon.png',
+        audioUrl: '/audio/dragon-story.mp3',
+        fullStory: `옛날 옛적, 제주도 서쪽 끝에 있는 용머리해안에는 신비로운 전설이 있었어요.\n\n바다 깊은 곳에 사는 용왕님이 육지로 올라와 쉬던 곳이 바로 이곳이라고 해요. 용왕님은 매일 밤 이곳에 올라와 별을 보며 제주 사람들의 안전을 지켜주었답니다.\n\n어느 날, 큰 태풍이 제주를 향해 다가오고 있었어요. 제주 사람들은 모두 걱정에 떨고 있었죠. 그때 용왕님이 나타나서 자신의 긴 꼬리로 태풍을 막아주었어요.\n\n그 후로 사람들은 이곳을 '용머리해안'이라고 부르게 되었고, 지금도 용왕님의 머리와 꼬리 모양을 닮은 바위들을 볼 수 있답니다.\n\n용왕님은 지금도 제주 바다를 지키고 있어요. 용머리해안에 가면 파도 소리 속에서 용왕님의 따뜻한 목소리를 들을 수 있을 거예요.`,
+        characters: {
+          hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
+          dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
+          tangerine: { name: '귤이', voice: '밝은 목소리', image: '/assets/gyuri.png' }
+        }
+      },
+      2: {
+        id: 2,
+        title: '꿈속에서 만난 송씨영감',
+        location: '외도 마을',
+        image: '/assets/guardian.png',
+        audioUrl: '/audio/guardian-story.mp3',
+        fullStory: `옛날옛날, 제주 외도 마을에 홍좌수라는 멋진 어른이 살았어요.\n힘도 세고 똑똑해서, 마을 사람들은 조금 무서워하면서도 좋아했죠.\n\n그러던 어느 날, 꿈속에 하얀 머리의 할아버지가 나타나 말했어요.\n“나는 이 마을을 지켜주는 송씨영감이란다.\n나를 모실 집을 만들어 주면, 너랑 마을에 좋은 일이 생길 거야!”\n\n홍좌수는 잠에서 깨자마자 신을 모시는 집을 지었어요.\n그날부터 마법처럼 좋은 일들이 생겼어요!\n집안은 점점 부자가 되고, 마을도 더 행복해졌답니다.\n\n그런데 몇몇 사람이 부러워하며 나쁜 계획을 꾸몄어요.\n바로 그날 밤, 꿈에 다시 송씨영감이 나와 말했어요.\n“그때가 오면, 조용히 가만히 있어야 해. 그러면 무사할 거야.”\n\n홍좌수는 약속을 잘 지켜 위험한 순간을 무사히 넘겼고,\n그 뒤로도 송씨영감을 정성껏 모셨어요.\n지금도 외도 마을 사람들은 매년 제사를 지내며\n행복과 복을 빌고 있답니다!`,
+        characters: {
+          hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
+          dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
+          tangerine: { name: '귤이', voice: '밝은 목소리', image: '/assets/gyuri.png' }
+        }
+      },
+      4: {
+        id: 4,
+        title: '산호 해녀의 전설',
+        location: '모슬포 마을',
+        image: '/assets/haenyeo.png',
+        audioUrl: '/audio/haenyeo-story.mp3',
+        fullStory: `옛날 제주도 모슬포 마을에 고운 얼굴의 착한 해녀가 살고 있었어요.\n\n그녀는 파도 속에서도 누구보다 씩씩하게 물질을 했지요.\n\n어느 날, 큰 바다에서 거북이 한 마리가 그물에 걸려 허우적거리고 있었어요.\n\n해녀는 그 거북이를 조심스럽게 바다로 돌려보내 주었답니다.\n\n며칠 뒤, 해녀는 깊은 바다에서 물질을 하다가 갑자기 눈앞이 반짝이는 궁전으로 바뀌는 걸 보았어요.\n\n그곳은 바로 용궁, 바닷속 왕국이었어요!\n\n그곳에 있던 산호 여왕님이 다가와 말했어요.\n\n“네가 우리 아기를 살려주었구나. 고마워. 이 산호꽃을 간직하렴. 이 꽃은 널 무서운 병에서 지켜줄 거란다.”\n\n그리고 병든 아버지를 위한 신비한 약도 함께 건네주었어요.\n\n그날 이후, 해녀는 마을에서도 가장 건강하고 씩씩한 사람이 되었어요.\n\n사람들은 그녀를 ‘산호 해녀’라 불렀고,\n\n그녀의 이야기는 제주 바다와 함께 오래도록 전해졌답니다.`,
+        characters: {
+          hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
+          dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
+          tangerine: { name: '귤이', voice: '밝은 목소리', image: '/assets/gyuri.png' }
+        }
+      }
+    };
+    return defaultStories[courseId] || defaultStories[1];
+  };
 
   // 미션 시작 핸들러 
   const handleStartMission = async (courseId) => {
@@ -56,170 +176,33 @@ export default function StoryPage({ params }) {
       return;
     }
   
-    const res = await fetch('/api/select-course', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, selectedCourseId: courseId })
-    });
+    try {
+      const res = await fetch('/api/select-course', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, selectedCourseId: courseId })
+      });
   
-    if (res.ok) {
-      localStorage.setItem('selectedCourseId', courseId);
-      router.push('/mission');
-    } else {
-      const data = await res.json();
-      alert(data.error || '코스 선택 실패');
+      if (res.ok) {
+        localStorage.setItem('selectedCourseId', courseId);
+        router.push('/mission');
+      } else {
+        const data = await res.json();
+        alert(data.error || '코스 선택 실패');
+      }
+    } catch (error) {
+      console.error('미션 시작 오류:', error);
+      alert('미션 시작 중 오류가 발생했습니다.');
     }
-  };
-
-  // 스토리 데이터
-  const stories = {
-    1: {
-      id: 1,
-      title: '용머리해안의 전설',
-      location: '용머리해안',
-      image: '/assets/dragon.png',
-      // TODO: 오디오 파일 URL을 백엔드에서 story 데이터에 포함시켜 전달받도록 수정
-      audioUrl: '/audio/dragon-story.mp3',
-      fullStory: `옛날 옛적, 제주도 서쪽 끝에 있는 용머리해안에는 신비로운 전설이 있었어요.
-
-바다 깊은 곳에 사는 용왕님이 육지로 올라와 쉬던 곳이 바로 이곳이라고 해요. 용왕님은 매일 밤 이곳에 올라와 별을 보며 제주 사람들의 안전을 지켜주었답니다.
-
-어느 날, 큰 태풍이 제주를 향해 다가오고 있었어요. 제주 사람들은 모두 걱정에 떨고 있었죠. 그때 용왕님이 나타나서 자신의 긴 꼬리로 태풍을 막아주었어요.
-
-그 후로 사람들은 이곳을 '용머리해안'이라고 부르게 되었고, 지금도 용왕님의 머리와 꼬리 모양을 닮은 바위들을 볼 수 있답니다.
-
-용왕님은 지금도 제주 바다를 지키고 있어요. 용머리해안에 가면 파도 소리 속에서 용왕님의 따뜻한 목소리를 들을 수 있을 거예요.`,
-      characters: {
-        hwarang: {
-          name: '화랑이',
-          voice: '상냥한 목소리',
-          image: '/assets/hwarang.png'
-        },
-        dolhareubang: {
-          name: '돌이방이',
-          voice: '든든한 목소리',
-          image: '/assets/doribangi.png'
-        },
-        tangerine: {
-          name: '귤이',
-          voice: '밝은 목소리',
-          image: '/assets/gyuri.png'
-        }
-      }
-    },
-
-    2: {
-      id: 2,
-      title: '한라산 산신령 이야기',
-      location: '한라산',
-      image: '/assets/guardian.png',
-      // TODO: 오디오 파일 URL을 백엔드에서 story 데이터에 포함시켜 전달받도록 수정
-      audioUrl: '/audio/mountain-story.mp3',
-      fullStory: `옛날 옛적, 한라산 꼭대기에는 산신령이 살고 있었어요.
-
-산신령은 산을 오르는 사람들에게 용기와 건강을 주며 지켜주었답니다. 어느 날, 한 청년이 소원을 빌기 위해 산신령을 찾았는데...`,
-      characters: {
-        hwarang: {
-          name: '화랑이',
-          voice: '상냥한 목소리',
-          image: '/assets/hwarang.png'
-        },
-        dolhareubang: {
-          name: '돌이방이',
-          voice: '든든한 목소리',
-          image: '/assets/doribangi.png'
-        },
-        tangerine: {
-          name: '귤이',
-          voice: '밝은 목소리',
-          image: '/assets/gyuri.png'
-        }
-      }
-    },
-    3: {
-      id: 3,
-      title: '성산일출봉의 비밀',
-      location: '성산일출봉',
-      image: '/assets/sungsan.png',
-      audioUrl: '/audio/sunrise-story.mp3',
-      fullStory: `성산일출봉에는 숨겨진 보물이 있다고 전해져요.
-  
-  해가 떠오를 때마다 바위 사이에서 빛나는 보석이 나타난다는 전설이 있답니다. 이 전설을 따라 많은 사람들이 성산일출봉을 찾아온다고 해요.`,
-      characters: {
-        hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
-        dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
-        tangerine: { name: '귤이', voice: '밝은 목소리', image: '/assets/gyuri.png' }
-      }
-    },
-    4: {
-      id: 4,
-      title: '제주 해녀의 하루',
-      location: '구좌읍 해녀마을',
-      image: '/assets/haenyeo.png',
-      audioUrl: '/audio/sunrise-story.mp3',
-      fullStory: `제주의 해녀들은 바다의 여신으로부터 특별한 힘을 받았다고 전해집니다.
-
-어린 시절부터 물질을 배우며 바다와 친구가 된 해녀들은 깊은 바다 속에서도 숨을 오래 참을 수 있는 능력을 갖추고 있어요.
-
-어느 날, 해녀 할머니는 어린 손녀에게 물질을 가르치며 바닷속의 신비한 세계를 소개했답니다. 바닷속에는 빛나는 소라와 전복, 그리고 바다 요정들이 살고 있었어요.
-
-할머니는 바닷속 보물들을 손녀와 함께 찾으며, 바다의 소중함과 자연을 아끼는 마음을 전해주었답니다.
-
-지금도 해녀들은 파도 소리와 함께 살아가며 제주 바다를 지키고 있어요.`,
-      characters: {
-        hwarang: { name: '화랑이', voice: '상냥한 목소리', image: '/assets/hwarang.png' },
-        dolhareubang: { name: '돌이방이', voice: '든든한 목소리', image: '/assets/doribangi.png' },
-        tangerine: { name: '귤이', voice: '밝은 목소리', image: '/assets/gyuri.png' }
-      }
-    },
-    5: {
-      id: 5,
-      title: '감귤 농장 탐험',
-      location: '서귀포 감귤농장',
-      image: '/assets/mandarin.png',
-      audioUrl: '/audio/mandarin-story.mp3',
-      fullStory: `제주의 감귤 농장에는 햇빛 요정이 살고 있다고 전해집니다.
-    
-    햇빛 요정은 매일 아침 감귤나무 사이를 날아다니며 달콤한 햇살을 나눠주지요. 그 덕분에 제주 감귤은 더욱 달고 향긋하게 자랄 수 있었어요.
-    
-    어느 날, 농장 주인은 작은 아이들에게 감귤 따는 법과 감귤이 자라는 과정을 알려주었답니다. 아이들은 신이 나서 감귤을 따고, 맛을 보며 웃음을 멈출 수 없었어요.
-    
-    또한, 감귤로 만든 청과 디저트를 함께 만들어 보면서 자연의 소중함과 농부들의 정성을 배웠답니다.
-    
-    제주 감귤은 단순한 과일이 아니라, 제주 사람들의 사랑과 자연의 기적이 담긴 보물이랍니다.`,
-      characters: {
-        hwarang: {
-          name: '화랑이',
-          voice: '상냥한 목소리',
-          image: '/assets/hwarang.png'
-        },
-        dolhareubang: {
-          name: '돌이방이',
-          voice: '든든한 목소리',
-          image: '/assets/doribangi.png'
-        },
-        tangerine: {
-          name: '귤이',
-          voice: '밝은 목소리',
-          image: '/assets/gyuri.png'
-        }
-      }
-    }
-    
   };
 
   useEffect(() => {
-    const storyId = params?.id || '1';
-    // TODO: storyId 기반으로 백엔드에서 스토리 데이터 fetch 필요
-    setStoryData(stories[storyId]);
-    
     // 선택된 캐릭터 가져오기
-    // TODO: 백엔드 또는 사용자 세션에서 캐릭터 정보 조회
     const character = localStorage.getItem('selectedCharacter') || 'hwarang';
     setSelectedCharacter(character);
-  }, [params]);
+  }, []);
 
-  // TODO: 실제 오디오 객체 생성 및 컨트롤 필요 
+  // 오디오 플레이어 시뮬레이션
   useEffect(() => {
     let interval;
     if (isPlaying) {
@@ -302,25 +285,56 @@ export default function StoryPage({ params }) {
           </div>
         </div>
 
-        {/* 캐릭터 정보 */}
+        {/* 캐릭터 정보 & 오디오 플레이어 */}
         <div className="p-4 bg-white border-b">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
-              <img 
-                src={currentCharacter.image} 
-                alt={currentCharacter.name}
-                className="w-full h-full object-cover"
-              />
+          <div className="flex items-center justify-between">
+            {/* 캐릭터 정보 */}
+            <div className="flex items-center space-x-3 flex-1">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                <img 
+                  src={currentCharacter.image} 
+                  alt={currentCharacter.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <p className="font-medium text-gray-800">{currentCharacter.name}의 목소리로</p>
+                <p className="text-sm text-gray-600">{currentCharacter.voice}</p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-gray-800">{currentCharacter.name}의 목소리로</p>
-              <p className="text-sm text-gray-600">{currentCharacter.voice}</p>
+
+            {/* 재생 버튼 */}
+            <div className="flex items-center justify-start space-x-3">
+            <button
+              onClick={togglePlay}
+              className="p-3 rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-white hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-lg"
+            >
+              {isPlaying ? (
+                <PauseIcon className="w-6 h-6" />
+              ) : (
+                <PlayIcon className="w-6 h-6" />
+              )}
+            </button>
             </div>
           </div>
+
+          {/* 진행률 표시 (옵션) */}
+          <div className="mt-4">
+            {/* <div className="flex justify-between text-sm text-gray-500 mb-2"> */}
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
+            {/* <div className="w-full bg-gray-200 rounded-full h-2"> */}
+              {/* <div 
+                className="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progressPercentage}%` }}
+              ></div> */}
+            {/* </div> */}
+          {/* </div> */}
         </div>
 
         {/* 오디오 플레이어 */}
-        <div className="p-6 bg-white border-b">
+        {/* <div className="p-6 bg-white border-b">
           <div className="mb-4">
             <div className="flex justify-between text-sm text-gray-500 mb-2">
               <span>{formatTime(currentTime)}</span>
@@ -361,7 +375,7 @@ export default function StoryPage({ params }) {
               <span className="text-xl">⚙️</span>
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* 스토리 텍스트 */}
         <div className="p-6">
@@ -373,7 +387,7 @@ export default function StoryPage({ params }) {
           <div className="bg-gray-50 rounded-2xl p-6">
             <div className="prose prose-sm max-w-none">
               {storyData.fullStory.split('\n\n').map((paragraph, index) => (
-                <p key={index} className="text-gray-700 leading-relaxed mb-4 last:mb-0">
+                <p key={index} className="text-gray-700 leading-relaxed mb-4 whitespace-pre-line">
                   {paragraph}
                 </p>
               ))}
@@ -385,7 +399,7 @@ export default function StoryPage({ params }) {
         <div className="p-4 bg-white border-t">
           <div className="flex space-x-3">
             <button
-              onClick={() => handleStartMission(course.id)}
+              onClick={() => handleStartMission(storyData.id)}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-xl font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
             >
               🎯 미션 시작하기
