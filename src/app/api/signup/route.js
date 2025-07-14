@@ -8,7 +8,7 @@ const DB_PATH = join(DATA_DIR, 'users.json');
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, selectedCourseId } = await req.json();
     let users = [];
 
     // 폴더 없으면 생성
@@ -33,7 +33,7 @@ export async function POST(req) {
     const newId = users.length > 0 ? Math.max(...users.map(u => Number(u.id))) + 1 : 0;
 
     // id 포함해서 user 생성
-    const newUser = { id: String(newId), name, email, password };
+    const newUser = { id: String(newId), name, email, password, selectedCourseId };
 
     users.push(newUser);
     writeFileSync(DB_PATH, JSON.stringify(users, null, 2));

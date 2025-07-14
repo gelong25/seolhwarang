@@ -248,7 +248,7 @@ export default function MyPage() {
                           <div className="flex items-center space-x-1 mb-2">
                             <span className="text-yellow-500">⭐</span>
                             <span className="text-sm font-medium text-gray-700">
-                              {coupon.points}P
+                            {(userData?.points ?? 0).toLocaleString()}P
                             </span>
                           </div>
                           <button className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors">

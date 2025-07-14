@@ -1,4 +1,3 @@
-//app/course/route.js
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -44,6 +43,7 @@ export default function Courses() {
 
   const allCourses = courses.map(course => ({
     ...course,
+    difficultyColor: getDifficultyColor(course.difficulty),
     difficultyText: getDifficultyText(course.difficulty)
   }));
 
@@ -143,7 +143,7 @@ export default function Courses() {
                   <p className="text-gray-700 text-sm mb-3 leading-relaxed">{course.description}</p>
 
                   <div className="flex items-center space-x-3 mb-4">
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${course.difficultyColor}`}>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium text-black ${course.difficultyColor?.split(' ').find(c => c.startsWith('bg-'))}`}>
                     {course.difficultyText}
                   </span>
                     <span className="text-xs text-gray-600 flex items-center space-x-1">

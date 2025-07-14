@@ -7,7 +7,7 @@
       "duration": "4-5시간",
       "difficulty": 1,
       "description": "바다 속 용왕님의 신비로운 이야기와 함께하는 서귀포 해안 여행",
-      "missions": 5,
+      "missions": 3,
       "points": 150,
       "completed": true,
       "image": "/assets/dragon.png",
@@ -20,30 +20,71 @@
         { "name": "용머리해안 카페거리", "type": "휴식", "description": "바다를 보며 제주 감귤차 마시기", "duration": "30분" }
       ],
       "story": "옛날 용왕님이 육지로 올라와 아름다운 제주 처녀와 사랑에 빠졌다는 전설이 있어요. 용왕님은 처녀를 위해 바다에서 가장 아름다운 보물들을 가져다주었지만...",
-      "highlights": ["🌊 용머리해안 절벽 트레킹", "🏔️ 산방산 전망대", "🤿 해녀 문화 체험", "☕ 오션뷰 카페 투어"]
+      "highlights": ["🌊 용머리해안 절벽 트레킹", "🏔️ 산방산 전망대", "🤿 해녀 문화 체험", "☕ 오션뷰 카페 투어"],
+      "missionIds": ["m1", "m2", "m3"]
     },
     {
       "id": 2,
-      "title": "한라산 산신령 이야기",
+      "title": "꿈속에서 만난 송씨영감",
       "category": "legend",
-      "location": "한라산 국립공원",
-      "duration": "6-7시간",
+      "location": "제주시 외도동 일대",
+      "duration": "하루 (오전~저녁)",
       "difficulty": 2,
-      "description": "높은 산에 사는 친근한 산신령과의 만남, 한라산 트레킹 코스",
-      "missions": 6,
-      "points": 200,
+      "description": "꿈속의 계시로 시작된 신령한 이야기와 함께하는 외도 마을 테마 여행",
+      "missions": 5,
+      "points": 160,
       "completed": false,
       "image": "/assets/guardian.png",
       "color": "bg-purple-50 border-purple-200",
       "premium": false,
       "spots": [
-        { "name": "어리목 탐방로", "type": "트레킹", "description": "산신령이 처음 나타나는 신비로운 숲길", "duration": "120분" },
-        { "name": "윗세오름", "type": "관광지", "description": "산신령의 정원이라 불리는 고원 습지", "duration": "90분" },
-        { "name": "한라산 자연휴양림", "type": "체험", "description": "산신령이 지켜주는 치유의 숲 체험", "duration": "60분" },
-        { "name": "제주허브동산", "type": "체험", "description": "산신령이 키우는 약초 배우기", "duration": "45분" }
+        {
+          "name": "외도 마을",
+          "type": "산책",
+          "description": "홍좌수의 흔적이 남아 있는 마을에서 송씨영감 당의 전설을 찾아요",
+          "duration": "60분"
+        },
+        {
+          "name": "구엄 돌염전",
+          "type": "체험",
+          "description": "송씨영감의 정결 의식을 재현하며 전통 방식으로 소금 채취",
+          "duration": "60분"
+        },
+        {
+          "name": "전통 음식 체험",
+          "type": "식사",
+          "description": "송씨영감 제사 음식에서 영감을 얻은 현대식 제주 전통 식사",
+          "duration": "60분"
+        },
+        {
+          "name": "항파두리 항몽유적지",
+          "type": "역사 체험",
+          "description": "마을을 지킨 용사들의 이야기를 AI 해설로 듣는 역사 스토리텔링",
+          "duration": "60분"
+        },
+        {
+          "name": "아르떼뮤지엄 제주",
+          "type": "미디어아트",
+          "description": "‘꿈속의 신령’을 테마로 한 몰입형 미디어아트 감상",
+          "duration": "60분"
+        },
+        {
+          "name": "제주라이트가든",
+          "type": "휴식",
+          "description": "별빛이 내리는 정원에서 송씨영감의 꿈을 마무리하며 소원 작성",
+          "duration": "60분"
+        }
       ],
-      "story": "한라산 깊은 곳에는 제주를 천 년 동안 지켜온 착한 산신령이 살고 있어요. 산신령은 길을 잃은 사람들을 도와주고, 아픈 사람들에게 약초를 나누어주곤 했답니다.",
-      "highlights": ["🥾 한라산 트레킹", "🌿 치유의 숲 체험", "🌺 약초 체험", "🍃 고원 습지 탐방"]
+      "story": "옛날 외도 마을에 꿈에서 신령을 만난 사람이 있었어요. 덕분에 마을에 큰 복이 찾아왔지만, 나쁜 사람들이 그걸 질투하면서...",
+      "highlights": [
+        "🔍 마을 안내판 속 숨은 단서 찾기",
+        "🧂 염전에서 소금채취 체험",
+        "🥢 송씨영감 음식에서 영감을 받은 오감 식사",
+        "🎤 항몽유적에서 듣는 제주 역사",
+        "🎨 소원을 담는 나무함 체험",
+        "🌌 제주라이트가든 방문"
+      ],
+      "missionIds": ["m4", "m5", "m6", "m7", "m8"]
     },
     {
       "id": 3,
@@ -76,7 +117,7 @@
       "location": "구좌읍 해녀마을",
       "duration": "4-5시간",
       "difficulty": 1,
-      "description": "용감한 제주 해녀 할머니들의 이야기, 해녀 문화 완전 체험",
+      "description": "산호꽃의 전설을 따라가는 해녀 체험 여행, 모슬포부터 해녀마을까지 이어지는 전설 속 하루",
       "missions": 5,
       "points": 120,
       "completed": false,
@@ -84,13 +125,14 @@
       "color": "bg-indigo-50 border-indigo-200",
       "premium": false,
       "spots": [
-        { "name": "해녀박물관", "type": "체험", "description": "해녀 할머니들의 삶과 문화 배우기", "duration": "90분" },
+        { "name": "해녀박물관", "type": "체험", "description": "제주 해녀의 역사와 산호 해녀 전설을 만나보는 시간", "duration": "90분" },
         { "name": "구좌읍 해녀마을", "type": "체험", "description": "현직 해녀와 함께하는 물질 체험", "duration": "120분" },
         { "name": "월정리 해변", "type": "관광지", "description": "해녀들이 작업하는 아름다운 해변", "duration": "60분" },
-        { "name": "해녀의 집", "type": "음식", "description": "해녀가 직접 잡은 해산물 맛보기", "duration": "45분" }
+        { "name": "해녀의 집", "type": "음식", "description": "해녀가 직접 잡은 해산물 맛보기", "duration": "45분" },
+        { "name": "소망 산호꽃 만들기", "type": "체험", "description": "소원을 담은 산호꽃 엽서 만들기", "duration": "30분" }
       ],
-      "story": "제주 해녀들은 바다의 여신으로부터 특별한 힘을 받아 깊은 바다 속에서도 숨을 오래 참을 수 있어요. 해녀 할머니들의 용기와 지혜가 담긴 이야기를 들어보세요.",
-      "highlights": ["🤿 해녀 물질 체험", "🏛️ 해녀박물관 투어", "🌊 월정리 해변 산책", "🦐 신선한 해산물 맛보기"]
+      "story": "옛날 모슬포의 한 해녀는 거북이를 도와준 인연으로 용궁의 산호꽃을 선물 받아 평생 건강하게 살았어요. 사람들은 그녀를 ‘산호 해녀’라 부르며 전설처럼 여겼답니다.",
+      "highlights": ["🤿 해녀 물질 체험", "🏛️ 해녀박물관 투어", "🌊 월정리 해변 산책", "🦐 신선한 해산물 맛보기", "🌺 산호꽃 엽서 만들기"]
     },
     {
       "id": 5,
@@ -105,7 +147,7 @@
       "completed": false,
       "image": "/assets/mandarin.png",
       "color": "bg-yellow-50 border-yellow-200",
-      "premium": false,
+      "premium": true,
       "spots": [
         { "name": "감귤농장", "type": "체험", "description": "감귤 따기 체험과 농장 주인 이야기", "duration": "90분" },
         { "name": "감귤 박물관", "type": "관광지", "description": "제주 감귤의 역사와 품종 배우기", "duration": "45분" },

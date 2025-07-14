@@ -1,0 +1,84 @@
+[
+    {
+      "id": "m1",
+      "courseId": 1,
+      "type": "photo",
+      "title": "용머리해안 사진 찍기",
+      "description": "용머리해안의 멋진 모습을 사진으로 담아보세요!",
+      "icon": "🐉📸",
+      "points": 50
+    },
+    {
+      "id": "m2",
+      "courseId": 1,
+      "type": "stamp",
+      "title": "관광 안내소 스탬프",
+      "description": "관광 안내소에서 기념 스탬프를 받아보세요.",
+      "icon": "🏛️📬",
+      "points": 30
+    },
+    {
+      "id": "m3",
+      "courseId": 1,
+      "type": "quiz",
+      "title": "용머리해안 퀴즈",
+      "description": "용머리해안에 대해 배운 것을 확인해보세요!",
+      "icon": "🧩🌊",
+      "points": 70
+    },
+    {
+      "id": "m4",
+      "courseId": 2,
+      "type": "photo",
+      "title": "송씨영감을 찾아라!",
+      "description": "송씨영감의 흔적이 남아 있는 외도 마을을 사진으로 남기세요!",
+      "icon": "👴📸",
+      "points": 30
+    },
+    {
+      "id": "m5",
+      "courseId": 2,
+      "type": "stamp",
+      "title": "별빛 음료 한잔",
+      "description": "카페에서 지정 음료 마시고 도장 받기",
+      "icon": "🧂⭐",
+      "points": 20
+    },
+    {
+      "id": "m8",
+      "courseId": 2,
+      "type": "photo",
+      "title": "당산에서 인사하기",
+      "description": "당산 앞에서 두 손 모아 인사 후 사진 찍기",
+      "icon": "🙏📷",
+      "points": 30
+    },
+    {
+      "id": "m9",
+      "courseId": 4,
+      "type": "photo",
+      "title": "산호 찾기 탐험대",
+      "description": "전시장 안에서 산호 모양 그림이나 모형을 찾아 사진 찍기",
+      "icon": "🌺📸",
+      "points": 50
+    },
+    {
+      "id": "m10",
+      "courseId": 4,
+      "type": "activity",
+      "title": "바닷속 산호를 지켜라!",
+      "description": "해녀 체험 중 산호를 보호하는 포즈 취하고 사진 찍기",
+      "icon": "🌊📸",
+      "points": 40
+    },
+    {
+      "id": "m11",
+      "courseId": 4,
+      "type": "quiz",
+      "title": "우리 가족 소원 엽서 만들기",
+      "description": "각자 소원을 적어 산호꽃 모양 엽서 만들기",
+      "icon": "📝💌",
+      "points": 60
+    }
+  ]
+  

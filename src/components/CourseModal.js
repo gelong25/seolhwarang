@@ -1,8 +1,8 @@
-// src/components/CourseModal.js
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { getDifficultyColor, getDifficultyText } from '@/utils/courseUtils';
+
 
 const CourseModal = ({ course, onClose, setShowSubscriptionModal }) => {
     const router = useRouter();
@@ -131,11 +131,44 @@ const CourseModal = ({ course, onClose, setShowSubscriptionModal }) => {
                 🎧 스토리 듣기
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   if (course.premium) {
                     setShowSubscriptionModal(true);
-                  } else {
+                    return;
+                  }
+                
+                  const stored = localStorage.getItem('user');
+                  if (!stored) {
+                    alert('로그인이 필요합니다');
+                    return;
+                  }
+                
+                  const storedUser = localStorage.getItem('user');
+                  if (!storedUser) {
+                    alert('로그인이 필요합니다');
+                    return;
+                  }
+
+                  const user = JSON.parse(storedUser);
+                  const userId = user.id;
+
+                  // 선택한 코스 ID 저장
+                  user.selectedCourseId = course.id;
+                  localStorage.setItem('user', JSON.stringify(user));
+                  localStorage.setItem('selectedCourseId', String(course.id));
+
+                  // 서버에도 저장
+                  const res = await fetch('/api/select-course', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, selectedCourseId: course.id }),
+                  });
+
+                  if (res.ok) {
                     router.push(`/mission/${course.id}`);
+                  } else {
+                    const data = await res.json();
+                    alert(data.error || '코스 선택 실패');
                   }
                 }}
                 className={`flex-1 px-4 py-3 rounded-xl font-medium transition-colors ${
