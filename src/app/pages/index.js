@@ -138,14 +138,14 @@ export default function Home() {
             <div className="flex items-center space-x-2">
               <span className="text-2xl">⭐</span>
               <div>
-                <p className="text-lg font-bold text-gray-800">{userPoints.toLocaleString()}P</p>
+              <p className="text-lg font-bold text-gray-800">{userPoints.toLocaleString()}P</p>
                 <p className="text-sm text-gray-500">모험 포인트</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-2xl">🏆</span>
               <div>
-                <p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>
+              {(userData && userData.completedMissions ? userData.completedMissions : 0).toLocaleString()}개
                 <p className="text-sm text-gray-500">완료한 미션</p>
               </div>
             </div>
@@ -230,18 +230,6 @@ export default function Home() {
                     </div>
 
                       <div className="flex space-x-2">
-                      <button 
-                          onClick={() => router.push(`/story/${course.id}`)}
-                          className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors"
-                        >
-                          🎧 스토리 듣기
-                        </button>
-                        <button
-                          onClick={() => router.push(`/mission/${course.id}`)}
-                          className="flex-1 px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-medium hover:bg-green-600 transition-colors"
-                        >
-                          🎯 미션 시작
-                        </button>
                       </div>
                     </div>
                   </div>

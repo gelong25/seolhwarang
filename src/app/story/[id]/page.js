@@ -48,6 +48,29 @@ export default function StoryPage({ params }) {
   const [storyData, setStoryData] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState('hwarang');
 
+  // 미션 시작 핸들러 
+  const handleStartMission = async (courseId) => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+  
+    const res = await fetch('/api/select-course', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, selectedCourseId: courseId })
+    });
+  
+    if (res.ok) {
+      localStorage.setItem('selectedCourseId', courseId);
+      router.push('/mission');
+    } else {
+      const data = await res.json();
+      alert(data.error || '코스 선택 실패');
+    }
+  };
+
   // 스토리 데이터
   const stories = {
     1: {
@@ -362,7 +385,7 @@ export default function StoryPage({ params }) {
         <div className="p-4 bg-white border-t">
           <div className="flex space-x-3">
             <button
-              onClick={() => router.push(`/mission/${storyData.id}`)}
+              onClick={() => handleStartMission(course.id)}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-xl font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
             >
               🎯 미션 시작하기

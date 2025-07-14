@@ -1,4 +1,3 @@
-//app/course/route.js
 "use client";
 
 import { useState, useEffect } from 'react';
