@@ -136,14 +136,14 @@ export default function MyPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="이메일 입력"
-                className="w-full px-4 py-2 border rounded-xl"
+                className="w-full px-4 py-2 border rounded-xl text-gray-400"
               />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호 입력"
-                className="w-full px-4 py-2 border rounded-xl"
+                className="w-full px-4 py-2 border rounded-xl text-gray-400"
               />
             </div>
             {/* 로그인 버튼 */}
@@ -268,14 +268,14 @@ export default function MyPage() {
                 onClick={() => setShowEditModal(true)}
                 className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
               >
-                <span className="mr-3">⚙️</span>
+                <span className="mr-3 text-gray-800">⚙️</span>
                 내 정보 수정
               </button>
               <button
                 onClick={() => setShowContactModal(true)}
                 className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
               >
-                <span className="mr-3">💬</span>
+                <span className="mr-3 text-gray-800">💬</span>
                 문의하기
               </button>
                   <button 
