@@ -23,7 +23,7 @@ export default function Home() {
   ? JSON.parse(localStorage.getItem('user'))
   : null;
 
-  const userData = storedUser
+  const userData = storedUser ?? { completedMissions: 0 };
 
   useEffect(() => {
     // 첫 방문 체크
@@ -104,7 +104,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" max-w-md mx-auto>
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto">
       <Head>
         <title>화랑이와 제주 모험</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
