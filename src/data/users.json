@@ -4,7 +4,8 @@
     "name": "김화랑",
     "email": "sss@naver.com",
     "password": "Qwer123$",
-    "courseId": 1
+    "courseId": 1,
+    "selectedCourseId": 1
   },
   {
     "id": "1",

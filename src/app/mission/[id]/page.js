@@ -18,9 +18,16 @@ export default function Mission() {
   const [courseMissions, setCourseMissions] = useState([]);
 
   useEffect(() => {
+    console.log('URL params:', params);
+    console.log('courseId (raw):', params.id);
+    console.log('courseId (parsed):', courseId);
+    console.log('Available courses:', courses);
+
     const selected = courses.find(c => c.id === courseId);
+    console.log('Selected course:', selected);
 
     if (!selected) {
+      console.log('Course not found for id:', courseId);
       alert("존재하지 않는 코스입니다.");
       router.push('/course');
       return;
