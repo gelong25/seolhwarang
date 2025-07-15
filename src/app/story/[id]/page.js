@@ -231,31 +231,74 @@ export default function StoryPage({ params }) {
 
   // 미션 시작 핸들러 
   const handleStartMission = async (courseId) => {
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      alert('로그인이 필요합니다.');
-      return;
-    }
-  
     try {
-      const res = await fetch('/api/select-course', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, selectedCourseId: courseId })
-      });
-  
-      if (res.ok) {
-        localStorage.setItem('selectedCourseId', courseId);
-        router.push('/mission');
-      } else {
-        const data = await res.json();
-        alert(data.error || '코스 선택 실패');
+      // missions.json 파일에서 미션 데이터 로드
+      const missionsData = await window.fs.readFile('missions.json', { encoding: 'utf8' });
+      const missions = JSON.parse(missionsData);
+      
+      // 해당 코스의 미션들 필터링
+      const courseMissions = missions.filter(mission => mission.courseId === courseId);
+      
+      // 선택된 코스 ID와 해당 미션들을 localStorage에 저장
+      localStorage.setItem('selectedCourseId', courseId.toString());
+      localStorage.setItem('courseMissions', JSON.stringify(courseMissions));
+      
+      // 사용자 ID가 없으면 임시 사용자 ID 생성
+      const userId = localStorage.getItem('userId') || 
+                     localStorage.getItem('currentUserId') || 
+                     localStorage.getItem('user_id');
+      
+      if (!userId) {
+        const tempUserId = 'temp_' + Date.now();
+        localStorage.setItem('userId', tempUserId);
       }
+      
+      if (courseMissions.length > 0) {
+        // 미션 목록 페이지로 이동 (코스 ID 포함)
+        router.push(`/mission/${courseId}`);
+      } else {
+        alert("해당 코스에 등록된 미션이 없습니다.");
+      }
+      
     } catch (error) {
-      console.error('미션 시작 오류:', error);
-      alert('미션 시작 중 오류가 발생했습니다.');
+      console.error('미션 데이터 로드 오류:', error);
+      
+      // 기본 미션 데이터로 fallback
+      const defaultMissions = getDefaultMissionsByCourse(courseId);
+      localStorage.setItem('selectedCourseId', courseId.toString());
+      localStorage.setItem('courseMissions', JSON.stringify(defaultMissions));
+      
+      // 사용자 ID 생성
+      const userId = localStorage.getItem('userId') || 'temp_' + Date.now();
+      localStorage.setItem('userId', userId);
+      
+      // 미션 목록 페이지로 이동 (코스 ID 포함)
+      router.push(`/mission/${courseId}`);
     }
   };
+  
+    // 기본 미션 데이터 (파일 로드 실패 시 사용)
+    const getDefaultMissionsByCourse = (courseId) => {
+      const defaultMissions = {
+        1: [
+          { id: "m1", courseId: 1, type: "photo", title: "용머리해안 사진 찍기", description: "용머리해안의 멋진 모습을 사진으로 담아보세요!", icon: "🐉📸", points: 50 },
+          { id: "m2", courseId: 1, type: "stamp", title: "관광 안내소 스탬프", description: "관광 안내소에서 기념 스탬프를 받아보세요.", icon: "🏛️📬", points: 30 },
+          { id: "m3", courseId: 1, type: "quiz", title: "용머리해안 퀴즈", description: "용머리해안에 대해 배운 것을 확인해보세요!", icon: "🧩🌊", points: 70 }
+        ],
+        2: [
+          { id: "m4", courseId: 2, type: "photo", title: "송씨영감을 찾아라!", description: "송씨영감의 흔적이 남아 있는 외도 마을을 사진으로 남기세요!", icon: "👴📸", points: 30 },
+          { id: "m5", courseId: 2, type: "stamp", title: "별빛 음료 한잔", description: "카페에서 지정 음료 마시고 도장 받기", icon: "🧂⭐", points: 20 },
+          { id: "m8", courseId: 2, type: "photo", title: "당산에서 인사하기", description: "당산 앞에서 두 손 모아 인사 후 사진 찍기", icon: "🙏📷", points: 30 }
+        ],
+        4: [
+          { id: "m9", courseId: 4, type: "photo", title: "산호 찾기 탐험대", description: "전시장 안에서 산호 모양 그림이나 모형을 찾아 사진 찍기", icon: "🌺📸", points: 50 },
+          { id: "m10", courseId: 4, type: "activity", title: "바닷속 산호를 지켜라!", description: "해녀 체험 중 산호를 보호하는 포즈 취하고 사진 찍기", icon: "🌊📸", points: 40 },
+          { id: "m11", courseId: 4, type: "quiz", title: "우리 가족 소원 엽서 만들기", description: "각자 소원을 적어 산호꽃 모양 엽서 만들기", icon: "📝💌", points: 60 }
+        ]
+      };
+      
+      return defaultMissions[courseId] || [];
+    };
 
   // 오디오 재생/정지 토글
   const togglePlay = () => {
