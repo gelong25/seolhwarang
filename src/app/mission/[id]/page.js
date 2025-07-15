@@ -106,17 +106,32 @@ export default function Mission() {
 
   if (!course || courseMissions.length === 0 || !mission) {
     return (
-      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
-        <div className="max-w-md w-full bg-white flex flex-col justify-center items-center py-20 px-4">
-          <h2 className="text-xl font-bold text-gray-700 mb-4">미션이 없습니다</h2>
-          <p className="text-gray-500">먼저 코스를 선택해주세요.</p>
-          <button
-            onClick={() => router.push('/course')}
-            className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-xl"
-          >
-            코스 선택하러 가기
-          </button>
+      <div className="min-h-screen bg-gray-50">
+        <Head>
+          <title>미션 수행</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
+  
+        <div className="max-w-md mx-auto bg-white min-h-screen">
+          <Header
+            title="미션 수행"
+            subtitle="코스를 먼저 선택해주세요"
+            gradient="from-indigo-400 to-purple-500"
+          />
+  
+          <div className="flex flex-col justify-center items-center py-20 px-4">
+            <h2 className="text-xl font-bold text-gray-700 mb-4">미션이 없습니다</h2>
+            <p className="text-gray-500">먼저 코스를 선택해주세요.</p>
+            <button
+              onClick={() => router.push('/course')}
+              className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-xl"
+            >
+              코스 선택하러 가기
+            </button>
+          </div>
         </div>
+  
+        <BottomNavigation />
       </div>
     );
   }

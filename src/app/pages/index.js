@@ -127,11 +127,11 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto">
-      <Head>
-        <title>화랑이와 제주 모험</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
+    <div className="min-h-screen bg-gray-50 flex justify-center">
+    <Head>
+      <title>화랑이와 제주 모험</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </Head>
 
       <div className="max-w-md mx-auto bg-white min-h-screen">
         {/* 헤더 */}
