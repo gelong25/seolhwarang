@@ -1,6 +1,6 @@
-//app/mypage/app.js
 'use client';
-import Header from '@/components/Header'; // 여니추가
+
+import Header from '@/components/Header';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'; 
 import Head from 'next/head';
@@ -18,11 +18,7 @@ export default function MyPage() {
   const router = useRouter();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
-  const [userData, setUserData] = useState(null); 
-
-  const storedUser = typeof window !== 'undefined' 
-  ? JSON.parse(localStorage.getItem('user')) 
-  : null;
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -31,12 +27,6 @@ export default function MyPage() {
       setIsLoggedIn(true);
       setSelectedCharacter(storedUser.selectedCharacter || 'hwarang');
     }
-  }, []);
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const savedCharacter = user?.selectedCharacter || 'hwarang';
-    setSelectedCharacter(savedCharacter);
   }, []);
 
   const characters = [
@@ -66,6 +56,7 @@ export default function MyPage() {
     if (res.ok) {
       alert('로그인 성공!');
       localStorage.setItem('user', JSON.stringify(data.user));
+      setUserData(data.user);
       setIsLoggedIn(true); 
     } else {
       alert(data.error);
@@ -80,6 +71,14 @@ export default function MyPage() {
     setShowSubscriptionModal(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUserData(null);
+    setIsLoggedIn(false);
+    setEmail('');
+    setPassword('');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Head>
@@ -88,22 +87,7 @@ export default function MyPage() {
       </Head>
 
       <div className="pb-24 max-w-md mx-auto bg-white min-h-screen">
-        {/* 헤더 */}
-        {/*<div className="bg-gradient-to-r from-green-400 to-blue-500 p-4 text-white">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-md">
-                <img src={getCurrentCharacter().emoji} alt={getCurrentCharacter().name} className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <h2 className="font-bold text-lg">마이페이지</h2>
-                <p className="text-sm opacity-90">내 정보와 혜택</p>
-              </div>
-            </div>
-          </div>
-        </div>*/}
         <Header title="마이페이지" subtitle="내 정보와 혜택" gradient="from-green-400 to-blue-500" />
-
 
         {/* 로그인하지 않은 경우 */}
         {!isLoggedIn ? (
@@ -129,24 +113,22 @@ export default function MyPage() {
             </div>
 
             <div className="space-y-3 mb-6">
-              {/* 이메일, 비밀번호 입력 */}
-            <div className="space-y-4 mb-4">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="이메일 입력"
-                className="w-full px-4 py-2 border rounded-xl text-gray-400"
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="비밀번호 입력"
-                className="w-full px-4 py-2 border rounded-xl text-gray-400"
-              />
-            </div>
-            {/* 로그인 버튼 */}
+              <div className="space-y-4 mb-4">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="이메일 입력"
+                  className="w-full px-4 py-2 border rounded-xl text-gray-400"
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="비밀번호 입력"
+                  className="w-full px-4 py-2 border rounded-xl text-gray-400"
+                />
+              </div>
               <button
                 onClick={handleLogin}
                 className="w-full px-6 py-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-2xl text-lg font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
@@ -163,63 +145,67 @@ export default function MyPage() {
           </div>
         ) : (
           <>
-            {/* 포인트 및 현황 */}
-            <div className="p-4 bg-white border-b">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl">⭐</span>
-                  <div>
-                    <p className="text-lg font-bold text-gray-800">{(userData.points ?? 0).toLocaleString()}P</p>
-                    <p className="text-sm text-gray-500">모험 포인트</p>
+            {/* 포인트 및 현황 - userData가 있을 때만 렌더링 */}
+            {userData && (
+              <div className="p-4 bg-white border-b">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl">⭐</span>
+                    <div>
+                      <p className="text-lg font-bold text-gray-800">{(userData.points ?? 0).toLocaleString()}P</p>
+                      <p className="text-sm text-gray-500">모험 포인트</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl">🏆</span>
-                  <div>
-                    <p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>
-                    <p className="text-sm text-gray-500">완료한 미션</p>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl">🏆</span>
+                    <div>
+                      <p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>
+                      <p className="text-sm text-gray-500">완료한 미션</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="p-4">
-              {/* 사용자 정보 */}
-              <div className="bg-green-50 rounded-2xl p-6 mb-6 border border-green-200">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-md">
-                    <img src={getCurrentCharacter().emoji} alt={getCurrentCharacter().name} className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg text-gray-800">{userData.name}</h3>
-                    <p className="text-sm text-gray-600">{userData.email}</p>
-                  </div>
-                </div>
-
-                {/* 구독 상태 */}
-                <div className="bg-white rounded-xl p-4 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-gray-800">
-                        {userData.isSubscribed ? '🎉 프리미엄 구독 중' : '🌟 무료 플랜'}
-                      </h4>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {userData.isSubscribed 
-                          ? '모든 기능을 이용할 수 있어요' 
-                          : '구독하고 더 많은 혜택을 누려보세요'}
-                      </p>
+              {/* 사용자 정보 - userData가 있을 때만 렌더링 */}
+              {userData && (
+                <div className="bg-green-50 rounded-2xl p-6 mb-6 border border-green-200">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-md">
+                      <img src={getCurrentCharacter().emoji} alt={getCurrentCharacter().name} className="w-full h-full object-cover" />
                     </div>
-                    {!userData.isSubscribed && (
-                      <button
-                        onClick={handleSubscribe}
-                        className="px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-full text-sm font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
-                      >
-                        구독하기
-                      </button>
-                    )}
+                    <div>
+                      <h3 className="font-bold text-lg text-gray-800">{userData.name}</h3>
+                      <p className="text-sm text-gray-600">{userData.email}</p>
+                    </div>
+                  </div>
+
+                  {/* 구독 상태 */}
+                  <div className="bg-white rounded-xl p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-800">
+                          {userData.isSubscribed ? '🎉 프리미엄 구독 중' : '🌟 무료 플랜'}
+                        </h4>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {userData.isSubscribed 
+                            ? '모든 기능을 이용할 수 있어요' 
+                            : '구독하고 더 많은 혜택을 누려보세요'}
+                        </p>
+                      </div>
+                      {!userData.isSubscribed && (
+                        <button
+                          onClick={handleSubscribe}
+                          className="px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-full text-sm font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
+                        >
+                          구독하기
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* 쿠폰 교환하기 */}
               <div className="mb-6">
@@ -248,7 +234,7 @@ export default function MyPage() {
                           <div className="flex items-center space-x-1 mb-2">
                             <span className="text-yellow-500">⭐</span>
                             <span className="text-sm font-medium text-gray-700">
-                            {(userData?.points ?? 0).toLocaleString()}P
+                              {coupon.points}P 필요
                             </span>
                           </div>
                           <button className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors">
@@ -264,25 +250,24 @@ export default function MyPage() {
               {/* 기타 메뉴 */}
               <div className="bg-white rounded-2xl border-2 border-gray-100 shadow-sm">
                 <div className="p-4 space-y-1">
-                <button
-                onClick={() => setShowEditModal(true)}
-                className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
-              >
-                <span className="mr-3 text-gray-800">⚙️</span>
-                내 정보 수정
-              </button>
-              <button
-                onClick={() => setShowContactModal(true)}
-                className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
-              >
-                <span className="mr-3 text-gray-800">💬</span>
-                문의하기
-              </button>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
+                  >
+                    <span className="mr-3 text-gray-800">⚙️</span>
+                    내 정보 수정
+                  </button>
+                  <button
+                    onClick={() => setShowContactModal(true)}
+                    className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700 flex items-center"
+                  >
+                    <span className="mr-3 text-gray-800">💬</span>
+                    문의하기
+                  </button>
                   <button 
-                    onClick={() => setIsLoggedIn(false)}
+                    onClick={handleLogout}
                     className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-red-600 flex items-center"
                   >
-                    {/* TODO: 로그아웃 처리 - 세션/토큰 제거 및 백엔드 로그아웃 호출 필요 */}
                     <span className="mr-3">🚪</span>
                     로그아웃
                   </button>
@@ -295,20 +280,20 @@ export default function MyPage() {
         {/* 구독 모달 */}
         {showSubscriptionModal && <SubscriptionModal onClose={closeModal} />}
 
-        {/* 하단 내비게이션<BottomNavigation /> */}
+        {/* 하단 내비게이션 */}
         <BottomNavigation />
 
         {/* 기타 모달 컴포넌트 */}
         {showEditModal && userData && (
-        <EditProfileModal
-          userData={userData}
-          onClose={() => setShowEditModal(false)}
-          onUpdateUser={(updatedUser) => setUserData(updatedUser)}
-        />
-      )}
-      {showContactModal && (
-        <ContactModal onClose={() => setShowContactModal(false)} />
-      )}
+          <EditProfileModal
+            userData={userData}
+            onClose={() => setShowEditModal(false)}
+            onUpdateUser={(updatedUser) => setUserData(updatedUser)}
+          />
+        )}
+        {showContactModal && (
+          <ContactModal onClose={() => setShowContactModal(false)} />
+        )}
       </div>
     </div>
   );
