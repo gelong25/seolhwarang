@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import characters from '@/data/character.json';
 import missions from '@/data/missions.json';
 import courses from '@/data/courses.json';
+import users from '@/data/users.json';
 
 export default function Mission() {
   const router = useRouter();
@@ -16,40 +17,62 @@ export default function Mission() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [course, setCourse] = useState(null);
   const [courseMissions, setCourseMissions] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userMissionProgress, setUserMissionProgress] = useState({});
 
   useEffect(() => {
-    console.log('URL params:', params);
-    console.log('courseId (raw):', params.id);
-    console.log('courseId (parsed):', courseId);
-    console.log('Available courses:', courses);
+    if (courseMissions.length > 0 && userMissionProgress) {
+      // 완료되지 않은 첫 번째 미션 찾기
+      const nextMissionIndex = courseMissions.findIndex(m => 
+        getMissionStatus(m.id) !== 'completed'
+      );
+      
+      if (nextMissionIndex !== -1) {
+        setCurrentMission(nextMissionIndex);
+      } else {
+        // 모든 미션 완료된 경우
+        setCurrentMission(courseMissions.length - 1);
+      }
+    }
+  }, [courseMissions, userMissionProgress]);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId') || '0'; 
+    const user = users.find(u => u.id === userId);
 
     const selected = courses.find(c => c.id === courseId);
-    console.log('Selected course:', selected);
 
-    if (!selected) {
-      console.log('Course not found for id:', courseId);
-      alert("존재하지 않는 코스입니다.");
-      router.push('/course');
-      return;
-    }
-
-    if (selected.premium) {
-      alert("프리미엄 코스입니다. 구독 후 이용해주세요.");
-      router.push('/course');
-      return;
+    if (user) {
+      setCurrentUser(user);
+      // localStorage에서 사용자의 미션 진행 상태 불러오기  
+      const savedProgress = localStorage.getItem(`missionProgress_${userId}_${courseId}`);
+      if (savedProgress) {
+        setUserMissionProgress(JSON.parse(savedProgress));
+      }
     }
 
     const matchedMissions = missions.filter(m => m.courseId === courseId);
 
-    if (matchedMissions.length === 0) {
-      alert("해당 코스에 등록된 미션이 없습니다.");
-      router.push('/course');
-      return;
-    }
-
     setCourse(selected);
     setCourseMissions(matchedMissions);
   }, [courseId, router]);
+
+  // 미션 진행 상태 저장 함수 
+  const saveMissionProgress = (missionId, status, data = {}) => {
+    if (!currentUser) return;
+    
+    const progressKey = `missionProgress_${currentUser.id}_${courseId}`;
+    const currentProgress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+    
+    currentProgress[missionId] = {
+      status, // 'completed', 'in_progress', 'not_started'
+      completedAt: status === 'completed' ? new Date().toISOString() : null,
+      data // 퀴즈 점수, 사진 URL 등 추가 데이터
+    };
+    
+    localStorage.setItem(progressKey, JSON.stringify(currentProgress));
+    setUserMissionProgress(currentProgress);
+  };
 
   const mission = courseMissions[currentMission];
 
@@ -60,6 +83,11 @@ export default function Mission() {
   const currentCharacter = characters.find(c => c.id === selectedCharacterId);
 
   const handleMissionComplete = () => {
+    saveMissionProgress(mission.id, 'completed', {
+      points: mission.points,
+      completedAt: new Date().toISOString()
+    });
+
     setShowSuccess(true);
     setTimeout(() => {
       if (currentMission < courseMissions.length - 1) {
@@ -71,17 +99,24 @@ export default function Mission() {
     }, 2000);
   };
 
+  // 미션 상태 확인 함수
+  const getMissionStatus = (missionId) => {
+    return userMissionProgress[missionId]?.status || 'not_started';
+  };
+
   if (!course || courseMissions.length === 0 || !mission) {
     return (
-      <div className="max-w-md mx-auto bg-white min-h-screen flex flex-col justify-center items-center">
-        <h2 className="text-xl font-bold text-gray-700 mb-4">미션이 없습니다</h2>
-        <p className="text-gray-500">먼저 코스를 선택해주세요.</p>
-        <button
-          onClick={() => router.push('/course')}
-          className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-xl"
-        >
-          코스 선택하러 가기
-        </button>
+      <div className="min-h-screen bg-gray-50 flex justify-center items-center">
+        <div className="max-w-md w-full bg-white flex flex-col justify-center items-center py-20 px-4">
+          <h2 className="text-xl font-bold text-gray-700 mb-4">미션이 없습니다</h2>
+          <p className="text-gray-500">먼저 코스를 선택해주세요.</p>
+          <button
+            onClick={() => router.push('/course')}
+            className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-xl"
+          >
+            코스 선택하러 가기
+          </button>
+        </div>
       </div>
     );
   }
@@ -153,20 +188,40 @@ export default function Mission() {
   
               {/* 미션 타입별 UI */}
               {mission.type === 'quiz' && (
-                <QuizMission mission={mission} onComplete={handleMissionComplete} />
-              )}
+                <QuizMission 
+                mission={mission} 
+                onComplete={handleMissionComplete}
+                savedProgress={userMissionProgress[mission.id]}
+                onProgressSave={saveMissionProgress}
+              />
+            )}
               
               {mission.type === 'photo' && (
-                <PhotoMission mission={mission} onComplete={handleMissionComplete} />
-              )}
+                <PhotoMission 
+                mission={mission} 
+                onComplete={handleMissionComplete}
+                savedProgress={userMissionProgress[mission.id]}
+                onProgressSave={saveMissionProgress}
+              />
+            )}
               
               {mission.type === 'stamp' && (
-                <StampMission mission={mission} onComplete={handleMissionComplete} />
-              )}
+                <StampMission 
+                mission={mission} 
+                onComplete={handleMissionComplete}
+                savedProgress={userMissionProgress[mission.id]}
+                onProgressSave={saveMissionProgress}
+              />
+            )}
               
               {mission.type === 'activity' && (
-                <ActivityMission mission={mission} onComplete={handleMissionComplete} />
-              )}
+                <ActivityMission 
+                mission={mission} 
+                onComplete={handleMissionComplete}
+                savedProgress={userMissionProgress[mission.id]}
+                onProgressSave={saveMissionProgress}
+              />
+            )}
             </div>
           ) : (
             <div className="text-center py-12">
@@ -186,13 +241,27 @@ export default function Mission() {
 }
 
 // 퀴즈 미션 컴포넌트
-function QuizMission({ mission, onComplete }) {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+function QuizMission({ mission, onComplete, savedProgress, onProgressSave }) {
+  const [currentQuestion, setCurrentQuestion] = useState(
+    savedProgress?.currentQuestion || 0
+  );
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(savedProgress?.score || 0);
   const [showResult, setShowResult] = useState(false);
 
-  // 미션별 퀴즈 데이터
+  // 진행 상태 저장
+  const saveProgress = () => {
+    const progressData = {
+      currentQuestion,
+      score,
+      selectedAnswers: [] // 추후 확장 가능
+    };
+    if (onProgressSave) {
+      onProgressSave(mission.id, 'in_progress', progressData);
+    }
+  };
+
+  // 퀴즈 데이터 (임시 하드코딩)
   const quizData = {
     'm3': {
       questions: [
@@ -233,11 +302,11 @@ function QuizMission({ mission, onComplete }) {
 
   const handleNextQuestion = () => {
     if (selectedAnswer === question.correct) {
-      setScore(score + 1);
+      setScore(prev => prev + 1);
     }
-    
+
     if (currentQuestion < currentQuiz.questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion(prev => prev + 1);
       setSelectedAnswer(null);
     } else {
       setShowResult(true);
@@ -247,6 +316,11 @@ function QuizMission({ mission, onComplete }) {
   const handleQuizComplete = () => {
     onComplete();
   };
+
+  // 자동 저장 useEffect
+  useEffect(() => {
+    saveProgress();
+  }, [currentQuestion, score]);
 
   if (showResult) {
     return (
@@ -307,13 +381,26 @@ function QuizMission({ mission, onComplete }) {
 }
 
 // 사진 미션 컴포넌트
-function PhotoMission({ mission, onComplete }) {
-  const [photoTaken, setPhotoTaken] = useState(false);
+function PhotoMission({ mission, onComplete, savedProgress, onProgressSave }) {
+  const [photoTaken, setPhotoTaken] = useState(savedProgress?.photoTaken || false);
   const [showCamera, setShowCamera] = useState(false);
-  const [photoDataUrl, setPhotoDataUrl] = useState(null);
+  const [photoDataUrl, setPhotoDataUrl] = useState(savedProgress?.photoDataUrl || null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
+
+  const saveProgress = () => {
+    if (onProgressSave) {
+      onProgressSave(mission.id, 'in_progress', {
+        photoTaken,
+        photoDataUrl
+      });
+    }
+  };
+
+  useEffect(() => {
+    saveProgress();
+  }, [photoTaken, photoDataUrl]);
 
   useEffect(() => {
     if (showCamera) {
@@ -414,7 +501,7 @@ function PhotoMission({ mission, onComplete }) {
 }
 
 // 스탬프 미션 컴포넌트
-function StampMission({ mission, onComplete }) {
+function StampMission({ mission, onComplete, savedProgress }) {
   const [stampReceived, setStampReceived] = useState(false);
   const [showStampAnimation, setShowStampAnimation] = useState(false);
 
@@ -484,7 +571,7 @@ function StampMission({ mission, onComplete }) {
 }
 
 // 활동 미션 컴포넌트
-function ActivityMission({ mission, onComplete }) {
+function ActivityMission({ mission, onComplete, savedProgress }) {
   const [activityCompleted, setActivityCompleted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   
