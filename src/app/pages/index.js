@@ -23,7 +23,7 @@ export default function Home() {
   ? JSON.parse(localStorage.getItem('user'))
   : null;
 
-  const userData = storedUser
+  const userData = storedUser ?? { completedMissions: 0 };
 
   useEffect(() => {
     // 첫 방문 체크
@@ -127,7 +127,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" max-w-md mx-auto>
+    <div className="min-h-screen bg-gray-50 max-w-md mx-auto">
       <Head>
         <title>화랑이와 제주 모험</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -137,23 +137,24 @@ export default function Home() {
         {/* 헤더 */}
         <div className="bg-gradient-to-r from-green-400 to-blue-500 p-4 text-white">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-md">
-              <img src={currentCharacter.image} alt={currentCharacter.name} className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <h2 className="font-bold text-lg">{currentCharacter.name}</h2>
-                <p className="text-sm opacity-90">모험 가이드</p>
-              </div>
+            
+            {/* 로고 */}
+            <div className="flex-shrink-0">
+              <img src="/assets/logo.png" alt="로고" className="w-24 h-auto" />
             </div>
+
+            {/* 변경 버튼 */}
             <button
               onClick={() => setShowCharacterSelect(true)}
               className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors"
             >
               변경
             </button>
+            
           </div>
         </div>
+
+
 
         {/* 포인트 및 현황 */}
         <div className="p-4 bg-white border-b">
