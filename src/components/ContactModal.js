@@ -3,7 +3,7 @@
 import React from 'react';
 
 export default function ContactModal({ onClose }) {
-  const supportEmail = "hayeon788@gmail.com";
+  const supportEmail = "johayeon788@gmail.com";
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
