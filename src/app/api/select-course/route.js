@@ -1,28 +1,36 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { NextResponse } from 'next/server';
+import { adminDb } from '@/lib/firebaseAdmin';
 
-const DB_PATH = join(process.cwd(), 'src', 'data', 'users.json');
-
-export async function POST(req) {
+export async function POST(request) {
   try {
-    const { userId, selectedCourseId } = await req.json();
-    const users = JSON.parse(readFileSync(DB_PATH, 'utf-8'));
-    const userIndex = users.findIndex((u) => u.id === userId);
+    // 1) 요청 바디에서 userId, selectedCourseId 파싱
+    const { userId, selectedCourseId } = await request.json();
 
-    if (userIndex === -1) {
-      return new Response(JSON.stringify({ error: '사용자를 찾을 수 없습니다' }), { status: 404 });
+    // 2) Firestore 'users/{userId}' 문서 참조
+    const userRef = adminDb.collection('users').doc(userId);
+    const userSnap = await userRef.get();
+
+    // 3) 사용자 존재 여부 확인
+    if (!userSnap.exists) {
+      return NextResponse.json(
+        { error: '사용자를 찾을 수 없습니다' },
+        { status: 404 }
+      );
     }
 
-    users[userIndex].selectedCourseId = selectedCourseId;
+    // 4) selectedCourseId 필드만 업데이트
+    await userRef.update({ selectedCourseId });
 
-    writeFileSync(DB_PATH, JSON.stringify(users, null, 2));
-
-    return new Response(JSON.stringify({ message: '코스 선택 완료' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    // 5) 성공 응답
+    return NextResponse.json(
+      { message: '코스 선택 완료' },
+      { status: 200 }
+    );
   } catch (err) {
     console.error('코스 선택 실패:', err);
-    return new Response(JSON.stringify({ error: '서버 오류' }), { status: 500 });
+    return NextResponse.json(
+      { error: '서버 오류' },
+      { status: 500 }
+    );
   }
 }
