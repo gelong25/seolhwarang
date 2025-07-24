@@ -18,7 +18,7 @@ export default function SignupPage() {
     const res = await fetch('/api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, name, email, password })
+      body: JSON.stringify({ name, email, password })
     });
   
     const data = await res.json();
@@ -48,7 +48,7 @@ export default function SignupPage() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
           <div>
@@ -58,7 +58,7 @@ export default function SignupPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
           <div>
@@ -68,7 +68,7 @@ export default function SignupPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
 

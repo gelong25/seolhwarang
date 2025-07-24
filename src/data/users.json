@@ -18,5 +18,12 @@
     "name": "이주봉",
     "email": "ju010320@gmail.com",
     "password": "Aasdf1234*"
+  },
+  {
+    "id": "3",
+    "name": "나나",
+    "email": "ssss@naver.com",
+    "password": "Qwer123$",
+    "selectedCourseId": 1
   }
 ]

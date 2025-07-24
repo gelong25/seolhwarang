@@ -35,7 +35,7 @@ export default function EditProfileModal({ userData, onClose, onUpdateUser }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg">
-        <h2 className="text-xl font-bold mb-4">⚙️ 내 정보 수정</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-800">⚙️ 내 정보 수정</h2>
 
         <div className="space-y-4">
           <input
@@ -43,14 +43,14 @@ export default function EditProfileModal({ userData, onClose, onUpdateUser }) {
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="이름"
-            className="w-full px-4 py-2 border rounded-xl"
+            className="w-full px-4 py-2 border rounded-xl text-gray-400"
           />
           <input
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="이메일"
-            className="w-full px-4 py-2 border rounded-xl"
+            className="w-full px-4 py-2 border rounded-xl text-gray-400"
           />
         </div>
 
