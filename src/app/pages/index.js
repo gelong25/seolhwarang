@@ -133,6 +133,7 @@ export default function Home() {
       <meta name="viewport" content="width=device-width, initial-scale=1" />
     </Head>
 
+
       <div className="max-w-md mx-auto bg-white min-h-screen">
         {/* 헤더 */}
         <div className="bg-gradient-to-r from-green-400 to-blue-500 p-4 text-white">
