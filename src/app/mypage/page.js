@@ -9,25 +9,34 @@ import SubscriptionModal from '@/components/SubscriptionModal';
 import EditProfileModal from '@/components/EditProfileModal';
 import ContactModal from '@/components/ContactModal';
 
+// Firebase Client 초기화 모듈에서 가져오기
+import { auth, db } from '@/lib/firebaseClient';
+
+// Firebase Auth, Firestore util
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+
 export default function MyPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const [selectedCharacter, setSelectedCharacter] = useState('hwarang');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const router = useRouter();
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
+
+  // 인증/회원 정보 상태
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUserData(storedUser);
-      setIsLoggedIn(true);
-      setSelectedCharacter(storedUser.selectedCharacter || 'hwarang');
-    }
-  }, []);
+  // 모달 상태
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+
+  // 폼 입력
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // 캐릭터 선택
+  const [selectedCharacter, setSelectedCharacter] = useState('hwarang');
 
   const characters = [
     { id: 'hwarang', name: '화랑이', emoji: '/assets/hwarang.png' },
@@ -41,43 +50,65 @@ export default function MyPage() {
     { name: '제주 전통차 카페', discount: '30%', points: 400 }
   ];
 
-  const getCurrentCharacter = () => {
-    return characters.find(char => char.id === selectedCharacter) || characters[0];
-  };
+  // 인증 상태 변화 감지
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Firestore에서 추가 프로필 읽기
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        const profile = snap.exists() ? snap.data() : {};
 
-  const handleLogin = async () => {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+        setUserData({
+          uid: user.uid,
+          name: user.displayName,
+          email: user.email,
+          points: profile.points ?? 0,
+          completedMissions: profile.completedMissions ?? 0,
+          isSubscribed: profile.isSubscribed ?? false,
+          selectedCharacter: profile.selectedCharacter ?? 'hwarang',
+        });
+        setSelectedCharacter(profile.selectedCharacter ?? 'hwarang');
+        setIsLoggedIn(true);
+      } else {
+        setUserData(null);
+        setIsLoggedIn(false);
+      }
     });
-  
-    const data = await res.json();
-    if (res.ok) {
-      alert('로그인 성공!');
-      localStorage.setItem('user', JSON.stringify(data.user));
-      setUserData(data.user);
-      setIsLoggedIn(true); 
-    } else {
-      alert(data.error);
+
+    return () => unsubscribe();
+  }, []);
+
+  // 로그인
+  const handleLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged가 알아서 userData 세팅
+    } catch (err) {
+      alert(err.message);
     }
   };
 
-  const handleSubscribe = () => {
-    setShowSubscriptionModal(true);
+  // 로그아웃
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const closeModal = () => {
-    setShowSubscriptionModal(false);
+  // 캐릭터 변경 시 Firestore 업데이트
+  const handleCharacterSelect = async (charId) => {
+    setSelectedCharacter(charId);
+    if (auth.currentUser) {
+      await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+        selectedCharacter: charId
+      });
+    }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    setUserData(null);
-    setIsLoggedIn(false);
-    setEmail('');
-    setPassword('');
-  };
+  const getCurrentCharacter = () =>
+    characters.find((c) => c.id === selectedCharacter) || characters[0];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,14 +116,12 @@ export default function MyPage() {
         <title>마이페이지</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-
       <div className="pb-24 max-w-md mx-auto bg-white min-h-screen">
         <Header title="마이페이지" subtitle="내 정보와 혜택" gradient="from-green-400 to-blue-500" />
 
-        {/* 로그인하지 않은 경우 */}
+        {/* 로그인 전 */}
         {!isLoggedIn ? (
           <div className="p-4">
-            {/* 캐릭터 인사 */}
             <div className="bg-green-50 rounded-2xl p-6 mb-6 border border-green-200">
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0 self-start mt-6">
@@ -103,8 +132,8 @@ export default function MyPage() {
                 <div className="flex-1">
                   <div className="bg-white rounded-xl p-5 shadow-sm">
                     <p className="text-gray-800 leading-relaxed text-base">
-                      "안녕~ 나는 {getCurrentCharacter().name}야! <br/> 
-                      로그인하고 더 많은 모험을 함께 떠나볼까? <br/>
+                      "안녕~ 나는 {getCurrentCharacter().name}야!<br/>
+                      로그인하고 더 많은 모험을 함께 떠나볼까?<br/>
                       특별한 혜택도 기다리고 있어!"
                     </p>
                   </div>
@@ -131,12 +160,12 @@ export default function MyPage() {
               </div>
               <button
                 onClick={handleLogin}
-                className="w-full px-6 py-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-2xl text-lg font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
+                className="w-full px-6 py-4 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-2xl text-lg font-medium hover:from-green-500 hover:to-blue-600 transition-all shadow-md"
               >
                 🔐 로그인하기
               </button>
               <button
-                onClick={() => router.push('/signup')} 
+                onClick={() => router.push('/signup')}
                 className="w-full px-6 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl text-lg font-medium hover:bg-gray-50 transition-colors shadow-sm"
               >
                 👤 회원가입하기
@@ -145,21 +174,21 @@ export default function MyPage() {
           </div>
         ) : (
           <>
-            {/* 포인트 및 현황 - userData가 있을 때만 렌더링 */}
+            {/* 로그인 후: 포인트/미션 현황 */}
             {userData && (
               <div className="p-4 bg-white border-b">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl">⭐</span>
                     <div>
-                      <p className="text-lg font-bold text-gray-800">{(userData.points ?? 0).toLocaleString()}P</p>
+                      <p className="text-lg font-bold text-gray-800">{userData.points.toLocaleString()}P</p>
                       <p className="text-sm text-gray-500">모험 포인트</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl">🏆</span>
                     <div>
-                      <p className="text-lg font-bold text-gray-800">{(userData.completedMissions ?? 0).toLocaleString()}개</p>
+                      <p className="text-lg font-bold text-gray-800">{userData.completedMissions.toLocaleString()}개</p>
                       <p className="text-sm text-gray-500">완료한 미션</p>
                     </div>
                   </div>
@@ -168,7 +197,7 @@ export default function MyPage() {
             )}
 
             <div className="p-4">
-              {/* 사용자 정보 - userData가 있을 때만 렌더링 */}
+              {/* 사용자 프로필 */}
               {userData && (
                 <div className="bg-green-50 rounded-2xl p-6 mb-6 border border-green-200">
                   <div className="flex items-center space-x-4 mb-4">
@@ -196,8 +225,8 @@ export default function MyPage() {
                       </div>
                       {!userData.isSubscribed && (
                         <button
-                          onClick={handleSubscribe}
-                          className="px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-full text-sm font-medium hover:from-green-500 hover:to-blue-600 transition-all duration-200 shadow-md"
+                          onClick={() => setShowSubscriptionModal(true)}
+                          className="px-4 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-full text-sm font-medium hover:from-green-500 hover:to-blue-600 transition-all shadow-md"
                         >
                           구독하기
                         </button>
@@ -207,19 +236,15 @@ export default function MyPage() {
                 </div>
               )}
 
-              {/* 쿠폰 교환하기 */}
+              {/* 쿠폰 교환 */}
               <div className="mb-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
                   <span className="text-2xl mr-2">🎁</span>
                   쿠폰 교환하기
                 </h3>
-                
                 <div className="space-y-4">
-                  {coupons.map((coupon, index) => (
-                    <div
-                      key={index}
-                      className="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200 shadow-sm"
-                    >
+                  {coupons.map((coupon, idx) => (
+                    <div key={idx} className="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200 shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center">
@@ -233,9 +258,7 @@ export default function MyPage() {
                         <div className="text-right">
                           <div className="flex items-center space-x-1 mb-2">
                             <span className="text-yellow-500">⭐</span>
-                            <span className="text-sm font-medium text-gray-700">
-                              {coupon.points}P 필요
-                            </span>
+                            <span className="text-sm font-medium text-gray-700">{coupon.points}P 필요</span>
                           </div>
                           <button className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors">
                             교환하기
@@ -264,7 +287,7 @@ export default function MyPage() {
                     <span className="mr-3 text-gray-800">💬</span>
                     문의하기
                   </button>
-                  <button 
+                  <button
                     onClick={handleLogout}
                     className="w-full text-left py-3 px-4 rounded-xl hover:bg-gray-50 text-red-600 flex items-center"
                   >
@@ -277,24 +300,21 @@ export default function MyPage() {
           </>
         )}
 
-        {/* 구독 모달 */}
-        {showSubscriptionModal && <SubscriptionModal onClose={closeModal} />}
-
-        {/* 하단 내비게이션 */}
-        <BottomNavigation />
-
-        {/* 기타 모달 컴포넌트 */}
+        {/* 모달 */}
+        {showSubscriptionModal && <SubscriptionModal onClose={() => setShowSubscriptionModal(false)} />}
         {showEditModal && userData && (
           <EditProfileModal
             userData={userData}
             onClose={() => setShowEditModal(false)}
-            onUpdateUser={(updatedUser) => setUserData(updatedUser)}
+            onUpdateUser={(updated) => {
+              setUserData(updated);
+            }}
           />
         )}
-        {showContactModal && (
-          <ContactModal onClose={() => setShowContactModal(false)} />
-        )}
+        {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
+
+        <BottomNavigation />
       </div>
     </div>
-  );
+);
 }

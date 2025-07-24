@@ -1,32 +1,44 @@
-//app/signup/page.js
 'use client';
 
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import { useState } from 'react';
 
+// Firebase Client 초기화 모듈에서 가져오기
+import { auth, db } from '@/lib/firebaseClient';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+
 export default function SignupPage() {
   const router = useRouter();
 
+  // form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignup = async (e) => {
     e.preventDefault();
-  
-    const res = await fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
-    });
-  
-    const data = await res.json();
-    if (res.ok) {
+    try {
+      // 1) Firebase Auth에 사용자 생성
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+      // 2) displayName 업데이트
+      await updateProfile(cred.user, { displayName: name });
+
+      // 3) Firestore에 초기 프로필 저장
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        selectedCharacter: 'hwarang',
+        points: 0,
+        completedMissions: 0,
+        isSubscribed: false,
+      });
+
       alert('회원가입 성공!');
       router.push('/mypage');
-    } else {
-      alert(data.error);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
     }
   };
 

@@ -7,7 +7,13 @@ import Header from '@/components/Header';
 import characters from '@/data/character.json';
 import missions from '@/data/missions.json';
 import courses from '@/data/courses.json';
-import users from '@/data/users.json';
+
+// Firebase Client 초기화
+import { auth, db } from '@/lib/firebaseClient';
+
+// 인증 상태 & Firestore 읽기/쓰기
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 export default function Mission() {
   const router = useRouter();
@@ -37,48 +43,68 @@ export default function Mission() {
   }, [courseMissions, userMissionProgress]);
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId') || '0'; 
-    const user = users.find(u => u.id === userId);
-
-    const selected = courses.find(c => c.id === courseId);
-
-    if (user) {
-      setCurrentUser(user);
-      // localStorage에서 사용자의 미션 진행 상태 불러오기  
-      const savedProgress = localStorage.getItem(`missionProgress_${userId}_${courseId}`);
-      if (savedProgress) {
-        setUserMissionProgress(JSON.parse(savedProgress));
+    // 1) Auth 상태 구독
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // 미로그인 시 로그인 페이지로
+        return router.push('/login');
       }
-    }
-
-    const matchedMissions = missions.filter(m => m.courseId === courseId);
-
-    setCourse(selected);
-    setCourseMissions(matchedMissions);
+  
+      // 2) Firestore 'users/{uid}'에서 프로필 읽기
+      const userSnap = await getDoc(doc(db, 'users', user.uid));
+      if (!userSnap.exists()) {
+        // 가입 직후라면 문서 없을 수 있음 → 기본값 세팅
+        await setDoc(doc(db, 'users', user.uid), {
+          selectedCharacter: 'hwarang',
+          points: 0,
+          completedMissions: 0,
+          isSubscribed: false,
+        });
+      }
+      const profile = userSnap.data() || {};
+      setCurrentUser({ uid: user.uid, ...profile });
+  
+      // 3) Firestore 'users/{uid}/missionProgress/{courseId}'에서 진행 상태 읽기
+      const progDoc = await getDoc(doc(db, 'users', user.uid, 'missionProgress', String(courseId)));
+      setUserMissionProgress(progDoc.exists() ? progDoc.data() : {});
+  
+      // 4) 코스·미션 로드
+      const selected = courses.find(c => c.id === courseId);
+      const matchedMissions = missions.filter(m => m.courseId === courseId);
+      setCourse(selected);
+      setCourseMissions(matchedMissions);
+    });
+  
+    return () => unsubscribe();
   }, [courseId, router]);
 
   // 미션 진행 상태 저장 함수 
-  const saveMissionProgress = (missionId, status, data = {}) => {
-    if (!currentUser) return;
-    
-    const progressKey = `missionProgress_${currentUser.id}_${courseId}`;
-    const currentProgress = JSON.parse(localStorage.getItem(progressKey) || '{}');
-    
-    currentProgress[missionId] = {
-      status, // 'completed', 'in_progress', 'not_started'
-      completedAt: status === 'completed' ? new Date().toISOString() : null,
-      data // 퀴즈 점수, 사진 URL 등 추가 데이터
+  const saveMissionProgress = async (missionId, status, data = {}) => {
+    if (!auth.currentUser) return;
+  
+    const ref = doc(db,
+      'users',
+      auth.currentUser.uid,
+      'missionProgress',
+      String(courseId)
+    );
+  
+    // 부분 업데이트: 해당 미션만 머지
+    const single = {
+      [missionId]: {
+        status,
+        completedAt: status === 'completed' ? new Date().toISOString() : null,
+        data
+      }
     };
-    
-    localStorage.setItem(progressKey, JSON.stringify(currentProgress));
-    setUserMissionProgress(currentProgress);
+  
+    await setDoc(ref, single, { merge: true });
+    setUserMissionProgress(prev => ({ ...prev, ...single }));
   };
 
   const mission = courseMissions[currentMission];
 
-  const selectedCharacterId = typeof window !== 'undefined'
-    ? localStorage.getItem('selectedCharacter') || 'hwarang'
-    : 'hwarang';
+  const selectedCharacterId = currentUser?.selectedCharacter || 'hwarang';
 
   const currentCharacter = characters.find(c => c.id === selectedCharacterId);
 

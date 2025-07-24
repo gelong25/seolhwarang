@@ -1,23 +1,13 @@
-//app/api/login/route.js
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
-
-const DB_PATH = join(process.cwd(), 'src', 'data', 'users.json');
+import { NextResponse } from 'next/server';
+import { adminAuth } from '@/lib/firebaseAdmin';
 
 export async function POST(req) {
-  const { email, password } = await req.json();
-
-  if (!existsSync(DB_PATH)) {
-    return new Response(JSON.stringify({ error: '가입된 정보가 없습니다.' }), { status: 400 });
+  const { idToken } = await req.json();
+  try {
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    const { uid, email, name } = decoded;
+    return NextResponse.json({ uid, email, name }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: '유효하지 않은 토큰' }, { status: 401 });
   }
-
-  const data = readFileSync(DB_PATH, 'utf-8');
-  const users = JSON.parse(data);
-  const user = users.find((u) => u.email === email && u.password === password);
-
-  if (!user) {
-    return new Response(JSON.stringify({ error: '이메일 또는 비밀번호가 틀렸습니다.' }), { status: 401 });
-  }
-
-  return new Response(JSON.stringify({ message: '로그인 성공', user }), { status: 200 });
 }
